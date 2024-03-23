@@ -1,0 +1,85 @@
+Data for "The genetic architecture of maternal effects across ontogeny in the red deer"
+by J Gauzere, JM Pemberton, S Morris, A Morris, LEB Kruuk, CA Walling, 2020.
+
+The data consists of three parts: data per individual, annual data, and a pedigree file for these individuals.
+This data was extracted from the Rum red deer projects Access database in March 2019.
+
+#-----------------------------------------------------------------------#
+#GENERAL STATEMENT, PLEASE READ THIS BEFORE USING THE DATA
+
+The attached archived file(s) contain data derived from the long term field project monitoring individual red deer on the Isle of Rum and their environment.  
+This is a request to please let us know if you use them.  Several people have spent the best part of their careers collecting the data.  
+If you plan to analyse the data, there are a number of reasons why it would be very helpful if you could contact j.pemberton@ed.ac.uk  before doing so:
+
+1)	Occasionally we discover and correct errors in the data.
+2)	The data are complex and workers who do not know the study system may benefit from advice when interpreting it.
+3)	At any one time quite a few people within the existing project collaboration are analysing data from this project. Someone else may already be conducting the analysis you have in mind and it is desirable to prevent duplication of effort.
+4)	In order to maintain funding for the project(s), every few years we have to write proposals for original analyses to funding agencies. It is therefore very helpful for those running the project to know what data analyses are in progress.
+If you are interested in analysing the detailed project data in any depth you may find it helpful to have our full relational database rather than the file(s) available here.  If so, then we have a simple process for bringing you onto the project as a collaborator.
+The deer IDs have been recoded and should therefore not be linked with data archived from other papers using the red deer data.
+#-----------------------------------------------------------------------#
+
+
+Explanation of the different columns:
+
+Individual data:
+ID				Individual identifier
+Sex				1=female, 2=male, 3=unknown
+BirthYear			Year of birth
+MaternalAge			Maternal age (at time of birth of focal individual; in years)
+ReproStatus			Maternal reproductive status in preceding year: Trueyeld = did not calve; 
+					Summeryeld = calved and lost calf before October 1; 
+					Winteryeld = calved and lost calf between Oct 1 - May 1;
+					Milk = calved and calf still alive on May 1; Naive = first time breeder.
+AgeHrs				Age at capture (in hours)	
+Measurer			Identity of the measurer for neonatal morphological traits ("CaptureWt", "JuvHindLeg")
+Region				Average spatial location of the mother during censusses between Jan 1 - May 1 prior 
+					to birth of the focal individual. One of 6 regions of the study area: NG=North 
+					Kilmory glen, MG=Mid Kilmory glen, SG = South Kilmory glen + Kinloch glen, 
+					LA = Laundry greens (west of NG), SI=Shamnan Insir (East), IM=Intermediate 
+					(between NG and SI)
+PopDens				Population size in January-May of calendar year of birth, as the number of females in each region
+AdultRegion			Lifetime location of the focal individual as an adult (NG, MG, SG, LA, SI, IM)
+CaptureWt			Measured weight at capture (in kg), for calves caught within 7 days of birth
+JuvHindLeg			Measured hind leg at capture (in mm), for calves caught within 7 days of birth
+NeoSurv				Survival from birth to October 1 (neonatal survival), 1=yes, 0=no
+SurvivalAge1			Survival from October 1 to May 1 (calf first year survival)
+SurvivalAge2			Survival from October 1 of the year of birth to May 1 of the second year following birth 
+				(calf second year survival)
+AgeFirstRepro			Age at first reproduction (in years), for females only
+Longevity			Estimated age at death, for mature individuals only (age > 2)
+JawLength			Measured cannon bone length (in mm) for dead mature individuals
+EndoVolume			Measured endocranial volume (in ml) for dead mature individuals
+AdultLegLength			Measured jaw bone length (in mm) for dead mature individuals
+SkullMeasurer			Identity of the measurer for 'EndoVolume'
+LegMeasurer			Identity of the measurer for 'AdultLegLength'
+JawMeasurer			Identity of the measurer for 'JawLength'
+
+
+
+
+Annual data:
+ID				Individual identifier
+Sex				1=female, 2=male, 3=unknown
+BirthYear			Year of birth
+YearMeasurement			Year of measurement for the trait
+Age				Age of the focal individual the year of measurement
+ReproStatus			Reproductive status of the focal individual in preceding year, only for females:
+					Trueyeld = did not calve; 
+					Summeryeld = calved and lost calf before October 1; 
+					Winteryeld = calved and lost calf between Oct 1 - May 1;
+					Milk = calved and calf still alive on May 1; Naive = first time breeder.
+Region				Individual's location the year of measurement
+ABS				Annual breeding success, estimated as the number of calves produced the year of measurement,
+					for mature individuals only
+
+
+
+Pedigree file:
+ID				Individual identifier
+Sire				Identity of the father, assigned from molecular markers
+Dam				Identity of the mother, assigned from molecular markers or observations
+
+
+
+
