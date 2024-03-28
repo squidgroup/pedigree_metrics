@@ -51,6 +51,9 @@ all_mbias_sims_prec <- sapply(peds,samp_var_sim_mat,h2=0.3,m2=0.2)
 
 all_stat==0
 
+load(paste0(wd,"Data/Processed/ped_stats.Rdata"))
+
+
 par(mfrow=c(5,5),mar=c(2,2,3,1))
 for(i in 1:nrow(all_stat)){
  plot(log(all_stat[i,]),1/sqrt(all_sim[2,]),pch=19,main=rownames(all_stat)[i])
@@ -116,14 +119,15 @@ sd_metrics2<-do.call(rbind,lapply(1:length(sd_metrics),function(i){
 
 table(sd_metrics2[,"metric"])
 par(mar=c(2,10,1,1))
-barplot(table(sd_metrics2[,"metric"])[c(8,10,5,13,3,11,6,7)],las=2, horiz = TRUE)
-metric_year <- table(sd_metrics2$year,sd_metrics2$metric)
+barplot(table(sd_metrics2[,"metric"])[c(12,13,2,1,4,7,6,11,15,9,3,14,5,10, 8)],las=2, horiz = TRUE, col=c(1,2,2,2,3,4,4,4,5,6,6,6,6,6,7))
 
+
+metric_year <- table(sd_metrics2$year,sd_metrics2$metric)
 all_n <-table(si_metric$year)
 
 plot(NA,ylim=c(0,max(metric_year)),xlim=c(1992,2020))
 lines(metric_year[,"siblings"]~as.numeric(rownames(metric_year)))
-	lines(metric_year[,"None"]~as.numeric(rownames(metric_year)))
+lines(metric_year[,"None"]~as.numeric(rownames(metric_year)))
 
 plot(NA,ylim=c(0,1),xlim=c(1992,2020))
 lines(metric_year[,"siblings"]/all_n~as.numeric(rownames(metric_year)))
@@ -138,6 +142,7 @@ simulation=table(studies_data$Are.pre.analysis.simulations.mentioned.),
 pedigree=table(studies_data$Pedigree.provided.),
  Amatrix=table(studies_data$A.or.invA.matrix.provided.)
 ))
+
 table(studies_data$Pedigree.provided.,si_metric$year)
 barplot(table(studies_data$Pedigree.provided.,si_metric$year))
 
@@ -155,8 +160,8 @@ panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...) {
    text(0.5, 0.5, txt, cex = cex.cor * r)
 }
 all_stat[all_stat==0]<-NA
-pairs(log(t(all_stat)[,1:12]),, upper.panel = panel.cor,gap=0)
-pairs(log(t(all_stat)[,c(1,13:23)]),, upper.panel = panel.cor,gap=0)
+pairs(log(t(all_stat)[,1:12]), upper.panel = panel.cor,gap=0, pch=19)
+pairs(log(t(all_stat)[,c(1,13:23)]), upper.panel = panel.cor,gap=0, pch=19)
 
 
 cbind(rownames(all_stat),eigen(cor(t(all_stat)))$vectors[,2])
