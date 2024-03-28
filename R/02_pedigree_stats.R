@@ -23,7 +23,7 @@ source(paste0(wd,"R/00_functions.R"))
 files<-list.files(paste0(wd,"Data/Raw/pedigrees"))
 type <- sapply(strsplit(files,"\\."),function(x) x[2])
 peds<-lapply(1:length(files), function(i){
-  ped <- read.table(paste0("/Users/joelpick/github/pedigree_simulations/Data/pedigrees/",files[i]),header=TRUE,sep=if(type[i]=="txt"){""}else{","}, na.strings=c("NA",0))
+  ped <- read.table(paste0(wd,"Data/Raw/pedigrees/",files[i]),header=TRUE,sep=if(type[i]=="txt"){""}else{","}, na.strings=c("NA",0))
   ped2 <- data.frame(animal=ped[,1],dam=ped[,"dam"],sire=ped[,"sire"])
   pedantics::fixPedigree(ped2)
 })
@@ -49,14 +49,16 @@ all_mbias_sims_prec <- sapply(peds,samp_var_sim_mat,h2=0.3,m2=0.2)
 
 # pairs(t(rbind(do.call(cbind,all_stat),samp_var=all_m)))
 
+all_stat==0
+
 par(mfrow=c(5,5),mar=c(2,2,3,1))
 for(i in 1:nrow(all_stat)){
- plot(log(all_stat[i,]),1/sqrt(all_sim),pch=19,main=rownames(all_stat)[i])
+ plot(log(all_stat[i,]),1/sqrt(all_sim[2,]),pch=19,main=rownames(all_stat)[i])
  # text(25, min(log(all_stat[i,]))+(max(log(all_stat[i,]))-min(log(all_stat[i,])))/10,rownames(all_stat)[i])
 }
 # apply(all_stat,1, function(y) plot(1/sqrt(all_m),log(y)))
 
-plot(all_sim,all_m,pch=19, log="xy")
+plot(all_sim[2,],all_m,pch=19, log="xy")
 abline(0,1)
 
 
@@ -105,24 +107,54 @@ si$n <- all_stat[1,]
 boxplot(n~taxonomic.class,si)
 
 
+si_metric <- studies_info[match(studies_data$Study.ID,studies_info$id),c("id","species_english","year","taxonomic.class")]
+
 sd_metrics<-strsplit(studies_data$Metrics.reported,", ")
 sd_metrics2<-do.call(rbind,lapply(1:length(sd_metrics),function(i){
-	if(length(sd_metrics[[i]])>0) data.frame(id=studies_data[i,"Study.ID"],metric=sd_metrics[[i]])
+	if(length(sd_metrics[[i]])>0) data.frame(id=studies_data[i,"Study.ID"],year=si_metric[i,"year"],metric=sd_metrics[[i]])
 }))
 
-plot(table(sd_metrics2[,"metric"]))
+table(sd_metrics2[,"metric"])
+par(mar=c(2,10,1,1))
+barplot(table(sd_metrics2[,"metric"])[c(8,10,5,13,3,11,6,7)],las=2, horiz = TRUE)
+metric_year <- table(sd_metrics2$year,sd_metrics2$metric)
+
+all_n <-table(si_metric$year)
+
+plot(NA,ylim=c(0,max(metric_year)),xlim=c(1992,2020))
+lines(metric_year[,"siblings"]~as.numeric(rownames(metric_year)))
+	lines(metric_year[,"None"]~as.numeric(rownames(metric_year)))
+
+plot(NA,ylim=c(0,1),xlim=c(1992,2020))
+lines(metric_year[,"siblings"]/all_n~as.numeric(rownames(metric_year)))
+lines(metric_year[,"None"]/all_n~as.numeric(rownames(metric_year)))
+lines(metric_year[,"Number of individuals in the pedigree"]/all_n~as.numeric(rownames(metric_year)))
+
+
+for(i in 1:ncol(metric_year)) lines(metric_year[,i]~as.numeric(rownames(metric_year)))
+
+barplot(cbind(pruning=table(studies_data$Is.pruning.mentioned.),
+simulation=table(studies_data$Are.pre.analysis.simulations.mentioned.),
+pedigree=table(studies_data$Pedigree.provided.),
+ Amatrix=table(studies_data$A.or.invA.matrix.provided.)
+))
+table(studies_data$Pedigree.provided.,si_metric$year)
+barplot(table(studies_data$Pedigree.provided.,si_metric$year))
+
+
+###############
+
 pairs(t(all_stat))
 pairs(t(all_stat)[,1:6])
- panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...)
-     {
-         par(usr = c(0, 1, 0, 1))
-         r <- abs(cor(x, y))
-         txt <- format(c(r, 0.123456789), digits = digits)[1]
-         txt <- paste0(prefix, txt)
-         if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
-         text(0.5, 0.5, txt, cex = cex.cor * r)
-     }
-
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...) {
+   par(usr = c(0, 1, 0, 1))
+   r <- abs(cor(x, y,use="pairwise.complete.obs"))
+   txt <- format(c(r, 0.123456789), digits = digits)[1]
+   txt <- paste0(prefix, txt)
+   if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+   text(0.5, 0.5, txt, cex = cex.cor * r)
+}
+all_stat[all_stat==0]<-NA
 pairs(log(t(all_stat)[,1:12]),, upper.panel = panel.cor,gap=0)
 pairs(log(t(all_stat)[,c(1,13:23)]),, upper.panel = panel.cor,gap=0)
 
