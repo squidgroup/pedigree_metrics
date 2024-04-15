@@ -1,3 +1,5 @@
+rm(list=ls())
+
 wd <- "/Users/joelpick/github/pedigree_metrics/"
 
 source(paste0(wd,"R/00_functions.R"))
@@ -119,7 +121,7 @@ sd_metrics2<-do.call(rbind,lapply(1:length(sd_metrics),function(i){
 
 table(sd_metrics2[,"metric"])
 par(mar=c(2,10,1,1))
-barplot(table(sd_metrics2[,"metric"])[c(12,13,2,1,4,7,6,11,15,9,3,14,5,10, 8)],las=2, horiz = TRUE, col=c(1,2,2,2,3,4,4,4,5,6,6,6,6,6,7))
+barplot(table(sd_metrics2[,"metric"])[c("pedigree error","relatedness distribution","average relatedness","inbreeding","mean pedigree depth","max pedigree depth","sibship size","number of founders","grandparents","siblings","maternities/paternities","Number of individuals in the pedigree", "None")],las=2, horiz = TRUE, col=c(1,2,2,3,4,4,5,6,6,6,6,6,7))
 
 
 metric_year <- table(sd_metrics2$year,sd_metrics2$metric)

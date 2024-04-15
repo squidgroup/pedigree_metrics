@@ -69,7 +69,7 @@ ped_stat <- function(ped, phenotyped=NULL){
 	
 ## relatedness
 
-	sp<-Matrix::summary(nadiv::makeA(ped[,1:3]))
+	sp<-Matrix::summary(nadiv::makeA(ped2[,1:3]))
 # sum(sp[,3])/ (nrow(ped) * (nrow(ped) - 1) / 2 + nrow(ped))
 
 	sp2<-sp[sp[,1]!=sp[,2],]
@@ -178,7 +178,11 @@ samp_var_sim <- function(ped, h2, m2=0){
 	c(mean=mean(sims),var=var(sims))
 }
 
+# ped<-peds[[2]]
 samp_var_sim_mat <- function(ped, h2, m2=0){
+	ped_ds <- ped[,1:2]
+	ped_ds[,"dam"]<-as.character(ped_ds[,"dam"])
+	ped_ds[is.na(ped_ds[,"dam"]),"dam"] <- paste0("dd",1:sum(is.na(ped_ds[,"dam"])))
 	data<-squidSim::get_population_data(
 		squidSim::simulate_population(
 			data_structure=ped_ds,
@@ -193,8 +197,10 @@ samp_var_sim_mat <- function(ped, h2, m2=0){
 	list=TRUE)
 
 	assign("ped.ainv", asreml::ainverse(ped), envir = .GlobalEnv)
+
+#x<-data[[1]]
 	sims<-c(parallel::mclapply(data, function(x){
-		x<-subset(x,!is.na(dam))
+		x <- x[!is.na(ped[,"dam"]),] #subset(x,!is.na(dam))
 		x$id <- as.factor(x$id)
 		x$dam <- as.factor(x$dam)
 		mod_1 <- asreml::asreml(
