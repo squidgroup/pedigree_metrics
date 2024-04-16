@@ -46,7 +46,7 @@ All studies that present some metrics present number of records and most present
 
 
 
-```{r, 'other-data', echo=FALSE}
+```{r, 'other-data', echo=FALSE, cache=TRUE}
 par(mar=c(4,8,1,1))
 barplot(cbind(pruning=table(studies_data$Is.pruning.mentioned.),
 simulation=table(studies_data$Are.pre.analysis.simulations.mentioned.),
@@ -111,11 +111,11 @@ We can compare each of the metrics (x axis) to precision estimated as the 1/SD o
 ```{r, metrics-precision, echo=FALSE, fig.width=10, fig.height=10}
 par(mfrow=c(5,5),mar=c(2,2,3,1))#mar=c(2,2,3,1))
 for(i in 1:nrow(all_stat)){
- plot(log(all_stat[i,]),1/sqrt(all_sim[2,]),pch=19,main=rownames(all_stat)[i])
+ plot(all_stat[i,],sqrt(all_sim[2,]),pch=19,main=rownames(all_stat)[i], log="xy")
  # text(25, min(log(all_stat[i,]))+(max(log(all_stat[i,]))-min(log(all_stat[i,])))/10,rownames(all_stat)[i])
 }
 
-plot(all_sim[2,],all_m,pch=19, log="xy", main="Visscher & Goddard 2015")
+plot(sqrt(all_sim[2,]),sqrt(all_m),pch=19, log="xy", main="Visscher & Goddard 2015")
 abline(0,1)
 ```
 
