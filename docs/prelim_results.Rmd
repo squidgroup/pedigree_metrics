@@ -46,7 +46,7 @@ All studies that present some metrics present number of records and most present
 
 
 
-```{r, 'other-data', echo=FALSE}
+```{r, 'other-data', echo=FALSE, cache=TRUE}
 par(mar=c(4,8,1,1))
 barplot(cbind(pruning=table(studies_data$Is.pruning.mentioned.),
 simulation=table(studies_data$Are.pre.analysis.simulations.mentioned.),
@@ -117,7 +117,6 @@ for(i in 1:nrow(all_stat)){
 
 # plot(all_sim[2,],all_m,pch=19, log="xy", main="Visscher & Goddard 2015")
 plot(1/sqrt(all_sim[2,]),1/sqrt(all_m["sv",]),pch=19, log="xy", main="Visscher & Goddard 2015")
-
 abline(0,1)
 ```
 
