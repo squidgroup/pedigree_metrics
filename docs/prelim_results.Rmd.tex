@@ -1,0 +1,148 @@
+---
+title: 'Pedigree metrics'
+---
+
+
+```{r, 'load-data', echo=FALSE}
+wd <- "/Users/joelpick/github/pedigree_metrics/"
+
+source(paste0(wd,"R/00_functions.R"))
+
+files<-list.files(paste0(wd,"Data/Raw/pedigrees"))
+
+
+studies_info <- read.csv(paste0(wd,"Data/Raw/studies_info.csv"))
+
+studies_data <- read.csv(paste0(wd,"Data/Raw/studies_results.csv"))
+
+id <- gsub("\\.|[a-z]","",files) #sapply(strsplit(files,"\\."),function(x) x[1])
+
+
+si <- studies_info[match(id,studies_info$id),c("id","species_english","taxonomic.class")]
+
+load(paste0(wd,"Data/Processed/ped_stats2.Rdata"))
+
+si$n <- all_stat[1,]
+
+```
+
+# Overview of the metrics
+
+```{r, 'metrics', echo=FALSE}
+si_metric <- studies_info[match(studies_data$Study.ID,studies_info$id),c("id","species_english","year","taxonomic.class")]
+
+sd_metrics<-strsplit(studies_data$Metrics.reported,", ")
+sd_metrics2<-do.call(rbind,lapply(1:length(sd_metrics),function(i){
+	if(length(sd_metrics[[i]])>0) data.frame(id=studies_data[i,"Study.ID"],year=si_metric[i,"year"],metric=sd_metrics[[i]])
+}))
+
+# table(sd_metrics2[,"metric"])
+par(mar=c(4,12,1,1))
+barplot(table(sd_metrics2[,"metric"])[c("relatedness distribution","average relatedness","inbreeding","mean pedigree depth","max pedigree depth","sibship size","number of founders","grandparents","siblings","maternities/paternities","Number of individuals in the pedigree", "None")],las=2, horiz = TRUE, col=palette.colors()[c(2,2,3,4,4,5,6,6,6,6,6,7)+1], xlab="Number of Studies")
+
+```
+
+All studies that present some metrics present number of records and most present maternities/paternities. A considerable number present a pedigree depth metric. The reporting of other metrics is less common. 
+
+
+
+```{r, 'other-data', echo=FALSE}
+par(mar=c(4,8,1,1))
+barplot(cbind(pruning=table(studies_data$Is.pruning.mentioned.),
+simulation=table(studies_data$Are.pre.analysis.simulations.mentioned.),
+data=c(NA,NA)
+), col=palette.colors()[2:3], las=2, horiz = TRUE, xlab="Number of Studies", ylim=c(0,5))
+barplot(cbind(c(NA,NA,NA),c(NA,NA,NA),table(ifelse(studies_data$A.or.invA.matrix.provided.=="Yes", "A", ifelse(studies_data$Pedigree.provided.=="Yes", "ped", "1"))))
+,add=TRUE, horiz = TRUE, col=palette.colors()[c(2,4,5)], xaxt="n")
+legend("top", c("No","Yes","A matrix","Pedigree"),pch=16, col=palette.colors()[2:5])
+
+```
+
+Few studies mention simulations. Discussion of pedigree pruning is more common, but still no where near ubiquitous. Only a small proportion of papers have an accompanying pedigree or A matrix. 
+
+These patterns have changed over time, for example the availability of pedigree data:
+```{r, 'data-time', echo=FALSE}
+
+# table(studies_data$Pedigree.provided.,si_metric$year)
+barplot(table(studies_data$Pedigree.provided.,si_metric$year))
+
+```
+
+
+
+# Pedigrees
+
+We can see that the bird pedigrees in our dataset are much larger then the mammal ones.
+
+```{r, 'taxa-bias', echo=FALSE}
+boxplot(n~taxonomic.class,si)
+```
+
+
+## Relationships between metrics
+ We can look at how all the pedantic metrics relate to each other. All metrics shown below are logged:
+```{r, 'metric-cor1',echo=FALSE, fig.width=10, fig.height=8}
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...) {
+   par(usr = c(0, 1, 0, 1))
+   r <- abs(cor(x, y,use="pairwise.complete.obs"))
+   txt <- format(c(r, 0.123456789), digits = digits)[1]
+   txt <- paste0(prefix, txt)
+   if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+   text(0.5, 0.5, txt, cex = cex.cor * r)
+}
+all_stat[all_stat==0]<-NA
+pairs(log(t(all_stat)[,1:12]), upper.panel = panel.cor,gap=0, pch=19)
+
+```
+
+The 'number of x relationship' metrics are all very highly correlated. We can perhaps broadly split these into three categories overall number of records, sibling based metrics, and grandparent based metrics. Realistically, we probably need one metrics for each of these groups.
+
+```{r, 'metric-cor2', echo=FALSE, fig.width=10, fig.height=8}
+
+pairs(log(t(all_stat)[,c(1,13:23)]), upper.panel = panel.cor,gap=0, pch=19)
+
+```
+
+The are generally lower correlations when considering the other metrics. Again the number based metrics are all pretty highly correlated with total records, the sibship size metrics are also very highly correlated, and number based metrics for the A matrix are very highly correlated. 
+
+## Metrics and precision
+We can compare each of the metrics (x axis) to precision estimated as the 1/SD of the sampling distribution estimated with $h^2$ of 0.3 and the pedigree in question (y axis). 
+
+```{r, metrics-precision, echo=FALSE, fig.width=10, fig.height=10}
+par(mfrow=c(5,5),mar=c(2,2,3,1))#mar=c(2,2,3,1))
+for(i in 1:nrow(all_stat)){
+ plot(all_stat[i,],1/sqrt(all_sim[2,]),pch=19,main=rownames(all_stat)[i], log="x")
+ # text(25, min(log(all_stat[i,]))+(max(log(all_stat[i,]))-min(log(all_stat[i,])))/10,rownames(all_stat)[i])
+}
+
+# plot(all_sim[2,],all_m,pch=19, log="xy", main="Visscher & Goddard 2015")
+plot(1/sqrt(all_sim[2,]),1/sqrt(all_m["sv",]),pch=19, log="xy", main="Visscher & Goddard 2015")
+
+abline(0,1)
+```
+
+Visscher & Goddard's (2015) precision metric is a very good predictor of precision in a simple animal model
+
+Given the variation in pedigree size across pedigrees used in wild studies, the simple size of the pedigree (e.g. total records or maternities) is a also very good predictor of precision (better than any other). 
+
+We need to think whether we want to know how well other metrics might explain the precision of differently structured  pedigrees of the same size (i.e. controlling for pedigree size), although size alone if clearly the most important factor. 
+<!-- 
+
+## Metrics and Risk of Bias
+
+We can also consider what these metrics might tell us about risk of bias. First, we can consider unmodelled maternal effects. Here I simulated  $h^2$=0.1 and $m^2$=0.2, but only modelled $V_A$, and estimated the resulting bias in $V_A$. This bias (y axis) is compared each of the metrics (x axis). 
+
+```{r, metrics-bias, echo=FALSE, fig.width=10, fig.height=10}
+
+
+# par(mfrow=c(5,5),mar=c(2,2,3,1))
+# for(i in 1:nrow(all_stat)){
+#  plot(log(all_stat[i,]),all_mbias_sims[1,],pch=19,main=rownames(all_stat)[i])
+#  # text(25, min(log(all_stat[i,]))+(max(log(all_stat[i,]))-min(log(all_stat[i,])))/10,rownames(all_stat)[i])
+# }
+# plot(all_mbias_sims[1,]~log(all_m),pch=19, main="Visscher & Goddard 2015")
+# abline(0,1)
+```
+
+Perhaps unsurprisingly, the mean sibship size is very strongly related to the size of the bias. This is because high sibship size means that a large amount of information is coming from sibling comparisons, and these comparisons are confounded with the maternal effects. 
+ -->

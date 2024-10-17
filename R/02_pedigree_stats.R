@@ -3,7 +3,7 @@ rm(list=ls())
 wd <- "/Users/joelpick/github/pedigree_metrics/"
 
 source(paste0(wd,"R/00_functions.R"))
-
+library(asreml)
 
 
 # null<- function()
@@ -36,13 +36,31 @@ lapply(peds,nrow)
 
 all_stat <- do.call(cbind,lapply(peds,ped_stat))
 
-all_m <- do.call(c,parallel::mclapply(peds,samp_var_h2,0.3,mc.cores=6))
+all_m <- do.call(rbind,parallel::mclapply(peds,samp_var_h2_ext,0.3,mc.cores=6))
+
+plot(all_m["a",],all_m["b",])
+plot(all_m["a",],all_m["N",])
+plot(all_m["b",],all_m["N",])
+plot(all_m["a",],all_m["b",]^2/all_m["N",])
+plot(all_m["N",],all_m["b",]^2/all_m["N",])
+
+
+# all_m2 <-matrix(all_m[,1],4,20)
+# rownames(all_m2)<-c("a","b","N","sv")
+# colnames(all_m2)<-files
+# all_m <-all_m2
+
 all_sim <- sapply(peds,samp_var_sim,0.3)
+
+all_mde <- sapply(peds,MDE_sim,1000)
+MDE_sim(peds[[1]],10)
 
 all_mbias_sims <- sapply(peds,samp_var_sim,h2=0.1,m2=0.2)
 
-save(all_stat, all_m, all_sim,all_mbias_sims,file=paste0(wd,"Data/Processed/ped_stats.Rdata"))
-
+save(all_stat, all_m, all_mde,all_sim,#all_mbias_sims,
+  file=paste0(wd,"Data/Processed/ped_stats2.Rdata"))
+plot(all_mde[3,],sqrt(all_m["sv",]))
+abline(0,0.7)
 
 all_mbias_sims_prec <- sapply(peds,samp_var_sim_mat,h2=0.3,m2=0.2)
 
@@ -63,7 +81,7 @@ for(i in 1:nrow(all_stat)){
 }
 # apply(all_stat,1, function(y) plot(1/sqrt(all_m),log(y)))
 
-plot(all_sim[2,],all_m,pch=19, log="xy")
+plot(all_sim[2,],all_m["sv",],pch=19, log="xy")
 abline(0,1)
 
 
