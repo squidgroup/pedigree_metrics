@@ -15,7 +15,7 @@ peds<-lapply(1:length(files), function(i){
 
 
 
-
+load(paste0(wd,"Data/Processed/phenotyped.Rdata"))
 plot(sim_all[2,],sim_juv[2,], log="xy")
 
 

@@ -46,7 +46,7 @@ All studies that present some metrics present number of records and most present
 
 
 
-```{r, 'other-data', echo=FALSE, cache=TRUE}
+```{r, 'other-data', echo=FALSE}
 par(mar=c(4,8,1,1))
 barplot(cbind(pruning=table(studies_data$Is.pruning.mentioned.),
 simulation=table(studies_data$Are.pre.analysis.simulations.mentioned.),
@@ -76,6 +76,8 @@ We can see that the bird pedigrees in our dataset are much larger then the mamma
 
 ```{r, 'taxa-bias', echo=FALSE}
 boxplot(n~taxonomic.class,si)
+plot(table(si$species_english))
+
 ```
 
 
