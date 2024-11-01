@@ -145,6 +145,20 @@ samp_var_h2 <- function(ped, h2){
 	})	
 }
 
+samp_var_h2_ext <- function(ped, h2){
+	A<-nadiv::makeA(ped[,1:3])
+	lambda <- eigen(A, symmetric=TRUE,only.values=TRUE)$values
+	N <- nrow(ped)
+	sapply(h2, function(x){
+		a <- sum( (lambda-1)^2 / (1 + x*(lambda-1))^2 )
+		b <- sum( (lambda-1) / (1 + x*(lambda-1)) )
+		c(a=a,b=b,N=N,sv=2/(a-b^2/N))
+	})	
+}
+# extract a,b, N and samp var
+# minimum detectable effect
+
+
 
 samp_var_sim <- function(ped, h2, m2=0){
 	## give all individuals without a mother a dummy mother, so get a phenotype
@@ -177,6 +191,23 @@ samp_var_sim <- function(ped, h2, m2=0){
 	rm("ped.ainv", envir = .GlobalEnv)
 	c(mean=mean(sims),var=var(sims))
 }
+
+MDE_sim <- function(ped,n_sims=1000){
+
+	assign("ped.ainv", asreml::ainverse(ped), envir = .GlobalEnv)
+
+	sims<-do.call(rbind,parallel::mclapply(1:n_sims, function(x){
+		dat <- data.frame(y=rnorm(nrow(ped)), id=as.factor(ped[,1]))
+		mod_1 <- asreml::asreml(
+				fixed= y~1
+				, random= ~vm(id,ped.ainv)
+			  , data= dat, trace=FALSE)
+		summary(mod_1)$varcomp["vm(id, ped.ainv)",1]
+	},mc.cores=6))	
+	rm("ped.ainv", envir = .GlobalEnv)
+	c(mean=mean(sims),var=var(sims), MDE=quantile(sims,0.95))
+}
+
 
 # ped<-peds[[2]]
 samp_var_sim_mat <- function(ped, h2, m2=0){

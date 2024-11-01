@@ -20,7 +20,7 @@ id <- gsub("\\.|[a-z]","",files) #sapply(strsplit(files,"\\."),function(x) x[1])
 
 si <- studies_info[match(id,studies_info$id),c("id","species_english","taxonomic.class")]
 
-load(paste0(wd,"Data/Processed/ped_stats.Rdata"))
+load(paste0(wd,"Data/Processed/ped_stats2.Rdata"))
 
 si$n <- all_stat[1,]
 
@@ -113,20 +113,21 @@ We can compare each of the metrics (x axis) to precision estimated as the 1/SD o
 ```{r, metrics-precision, echo=FALSE, fig.width=10, fig.height=10}
 par(mfrow=c(5,5),mar=c(2,2,3,1))#mar=c(2,2,3,1))
 for(i in 1:nrow(all_stat)){
- plot(all_stat[i,],sqrt(all_sim[2,]),pch=19,main=rownames(all_stat)[i], log="xy")
+ plot(all_stat[i,],1/sqrt(all_sim[2,]),pch=19,main=rownames(all_stat)[i], log="x")
  # text(25, min(log(all_stat[i,]))+(max(log(all_stat[i,]))-min(log(all_stat[i,])))/10,rownames(all_stat)[i])
 }
 
-plot(sqrt(all_sim[2,]),sqrt(all_m),pch=19, log="xy", main="Visscher & Goddard 2015")
+# plot(all_sim[2,],all_m,pch=19, log="xy", main="Visscher & Goddard 2015")
+plot(1/sqrt(all_sim[2,]),1/sqrt(all_m["sv",]),pch=19, log="xy", main="Visscher & Goddard 2015")
 abline(0,1)
 ```
 
 Visscher & Goddard's (2015) precision metric is a very good predictor of precision in a simple animal model
 
-Given the variation in pedigree size across pedigrees used in wild studies, the simple size of the pedigree (e.g. total records or maternities) is a also very good predictor of precision (better than any other. 
+Given the variation in pedigree size across pedigrees used in wild studies, the simple size of the pedigree (e.g. total records or maternities) is a also very good predictor of precision (better than any other). 
 
 We need to think whether we want to know how well other metrics might explain the precision of differently structured  pedigrees of the same size (i.e. controlling for pedigree size), although size alone if clearly the most important factor. 
-
+<!-- 
 
 ## Metrics and Risk of Bias
 
@@ -135,13 +136,14 @@ We can also consider what these metrics might tell us about risk of bias. First,
 ```{r, metrics-bias, echo=FALSE, fig.width=10, fig.height=10}
 
 
-par(mfrow=c(5,5),mar=c(2,2,3,1))
-for(i in 1:nrow(all_stat)){
- plot(log(all_stat[i,]),all_mbias_sims[1,],pch=19,main=rownames(all_stat)[i])
- # text(25, min(log(all_stat[i,]))+(max(log(all_stat[i,]))-min(log(all_stat[i,])))/10,rownames(all_stat)[i])
-}
-plot(all_mbias_sims[1,]~log(all_m),pch=19, main="Visscher & Goddard 2015")
-abline(0,1)
+# par(mfrow=c(5,5),mar=c(2,2,3,1))
+# for(i in 1:nrow(all_stat)){
+#  plot(log(all_stat[i,]),all_mbias_sims[1,],pch=19,main=rownames(all_stat)[i])
+#  # text(25, min(log(all_stat[i,]))+(max(log(all_stat[i,]))-min(log(all_stat[i,])))/10,rownames(all_stat)[i])
+# }
+# plot(all_mbias_sims[1,]~log(all_m),pch=19, main="Visscher & Goddard 2015")
+# abline(0,1)
 ```
 
 Perhaps unsurprisingly, the mean sibship size is very strongly related to the size of the bias. This is because high sibship size means that a large amount of information is coming from sibling comparisons, and these comparisons are confounded with the maternal effects. 
+ -->
