@@ -1,4 +1,4 @@
-animal	sire	dam
+id	sire	dam
 172	NA	NA
 173	NA	NA
 2098	NA	NA

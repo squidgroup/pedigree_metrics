@@ -1,4 +1,4 @@
-ID	MUMID	FATHER
+id	dam	sire
 1900	NA	NA
 6549	NA	NA
 1195	NA	NA

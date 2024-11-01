@@ -1,4 +1,4 @@
-animal dam sire
+id dam sire
 CN05-F2 NA NA
 CN05-F4 NA NA
 CN05-F5 NA NA
