@@ -39,3 +39,34 @@ barplot(table(studies_info$year))
 
 barplot(table(studies_data$Pedigree.provided.,si_metric$year),add=TRUE, col=c("cornflowerblue","blue"))
 legend("topleft",c("no pedigree available","pedigree available","not extracted"), fill=c("cornflowerblue","blue","grey"))
+
+
+
+
+
+
+
+
+metric_year <- table(sd_metrics2$year,sd_metrics2$metric)
+all_n <-table(si_metric$year)
+year <-as.numeric(rownames(metric_year))
+
+plot(NA,ylim=c(0,max(metric_year)),xlim=c(1992,2020))
+lines(metric_year[,"siblings"]~as.numeric(rownames(metric_year)))
+lines(metric_year[,"None"]~as.numeric(rownames(metric_year)))
+
+plot(NA,ylim=c(0,1),xlim=c(1992,2020))
+lines(metric_year[,"siblings"]/all_n~as.numeric(rownames(metric_year)), col="blue")
+lines(metric_year[,"None"]/all_n~as.numeric(rownames(metric_year)), col="red")
+lines(metric_year[,"Number of individuals in the pedigree"]/all_n~as.numeric(rownames(metric_year)))
+
+plot(as.vector(metric_year[,"relatedness distribution"]/all_n)~as.numeric(rownames(metric_year)), type="b")
+
+plot(as.vector(metric_year[,"maternities/paternities"]/all_n)~as.numeric(rownames(metric_year)), type="b")
+
+par(mfrow=c(4,4),mar=c(4,4,1,1))
+for( i in 1:ncol(metric_year)){
+  metric <- as.vector(metric_year[,i]/all_n)
+  plot(metric~year, ylab=colnames(metric_year)[i], type="l", col="grey")
+  points(metric~year, col=c("red","blue")[as.factor(year>2010)], pch=19)
+}
