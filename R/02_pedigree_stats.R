@@ -21,6 +21,9 @@ library(asreml)
 # hist(sims)
 
 
+####
+# Read in Data
+####
 
 files<-list.files(paste0(wd,"Data/Raw/pedigrees"))
 type <- sapply(strsplit(files,"\\."),function(x) x[2])
@@ -30,19 +33,76 @@ peds<-lapply(1:length(files), function(i){
   pedantics::fixPedigree(ped2)
 })
 names(peds) <- files
-lapply(peds,head)
-lapply(peds,tail)
-lapply(peds,nrow)
 
-all_stat <- do.call(cbind,lapply(peds,ped_stat))
+# lapply(peds,head)
+# lapply(peds,tail)
+# lapply(peds,nrow)
 
-all_m <- do.call(rbind,parallel::mclapply(peds,samp_var_h2_ext,0.3,mc.cores=6))
+####
+# Calculate eigenvalues for each pedigrees
+####
 
-plot(all_m["a",],all_m["b",])
-plot(all_m["a",],all_m["N",])
-plot(all_m["b",],all_m["N",])
-plot(all_m["a",],all_m["b",]^2/all_m["N",])
-plot(all_m["N",],all_m["b",]^2/all_m["N",])
+lambdas <- parallel::mclapply(peds,function(ped){
+  A<-nadiv::makeA(ped[,1:3])
+  lambda <- eigen(A, symmetric=TRUE,only.values=TRUE)$values
+}, mc.cores=6)
+
+save(lambdas,file=paste0(wd,"Data/Processed/ped_lambdas.Rdata"))
+
+
+####
+# Calculate stats for each pedigrees
+####
+
+all_stat <- do.call(cbind,parallel::mclapply(peds,ped_stat, mc.cores=6))
+
+save(all_stat,file=paste0(wd,"Data/Processed/ped_stats.Rdata"))
+
+plot(all_sv0,all_mde[3,],log="xy")
+
+
+plot(2/(all_stat[1,]^2 * all_stat[24,]),all_sv,log="xy")
+plot(2/(all_stat[1,]^2 * all_stat[24,]),all_stat[2,],log="xy")
+plot(2/(all_stat[1,]^2 * all_stat[24,]),all_mde[3,],log="xy")
+plot(2/(all_stat[1,]^2 * all_stat[24,]),all_sv0,log="xy")
+
+hist(log(all_stat[24,]))
+hist(log(all_stat[1,]))
+
+plot(all_stat[24,],all_stat[1,], log="xy")
+
+
+####
+# Calculate sampling variance for each pedigrees via simulation
+####
+set.seed(20241105)
+all_sim <- sapply(peds,samp_var_sim,h2=0.3,n_sim=1000)
+
+save(all_sim,file=paste0(wd,"Data/Processed/ped_sims.Rdata"))
+
+
+####
+# Calculate minimum detectable effect for each pedigrees via simulation
+####
+set.seed(20241106)
+all_mde <- sapply(peds,MDE_sim,1000)
+# MDE_sim(peds[[1]],10)
+
+save(all_mde,file=paste0(wd,"Data/Processed/ped_mde.Rdata"))
+
+
+
+####
+# Calculate Visscher and Goddard sampling variance for each pedigrees
+####
+# all_m <- do.call(c,parallel::mclapply(peds,samp_var_h2,0.3,mc.cores=6))
+# all_m <- do.call(rbind,parallel::mclapply(peds,samp_var_h2_ext,0.3,mc.cores=6))
+
+# plot(all_m["a",],all_m["b",])
+# plot(all_m["a",],all_m["N",])
+# plot(all_m["b",],all_m["N",])
+# plot(all_m["a",],all_m["b",]^2/all_m["N",])
+# plot(all_m["N",],all_m["b",]^2/all_m["N",])
 
 
 # all_m2 <-matrix(all_m[,1],4,20)
@@ -50,12 +110,17 @@ plot(all_m["N",],all_m["b",]^2/all_m["N",])
 # colnames(all_m2)<-files
 # all_m <-all_m2
 
-all_sim <- sapply(peds,samp_var_sim,0.3)
 
-all_mde <- sapply(peds,MDE_sim,1000)
-MDE_sim(peds[[1]],10)
+####
+# Calculate bias from unmodelled maternal effects for each pedigrees via simulation
+####
+set.seed(20241107)
+all_mbias_sims <- sapply(peds,samp_var_sim,h2=0.1,m2=0.2, n_sim=500)
+save(all_mbias_sims,file=paste0(wd,"Data/Processed/ped_mbias.Rdata"))
 
-all_mbias_sims <- sapply(peds,samp_var_sim,h2=0.1,m2=0.2)
+
+
+
 
 save(all_stat, all_m, all_mde,all_sim,#all_mbias_sims,
   file=paste0(wd,"Data/Processed/ped_stats2.Rdata"))

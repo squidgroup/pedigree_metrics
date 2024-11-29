@@ -20,9 +20,15 @@ id <- gsub("\\.|[a-z]","",files) #sapply(strsplit(files,"\\."),function(x) x[1])
 
 si <- studies_info[match(id,studies_info$id),c("id","species_english","taxonomic.class")]
 
-load(paste0(wd,"Data/Processed/ped_stats2.Rdata"))
+load(paste0(wd,"Data/Processed/ped_stats.Rdata"))
+load(paste0(wd,"Data/Processed/ped_sims.Rdata"))
+load(paste0(wd,"Data/Processed/ped_lambdas.Rdata"))
+load(paste0(wd,"Data/Processed/ped_mde.Rdata"))
 
 si$n <- all_stat[1,]
+
+table(si$n)
+## remove D33 and D38 - repeats
 
 ```
 

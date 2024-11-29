@@ -73,7 +73,7 @@ ped_stat <- function(ped, phenotyped=NULL){
 # sum(sp[,3])/ (nrow(ped) * (nrow(ped) - 1) / 2 + nrow(ped))
 
 	sp2<-sp[sp[,1]!=sp[,2],]
-
+	total_links <- (nrow(ped) * (nrow(ped) - 1) / 2 )
 	
 ####################
 # ---- put together
@@ -114,11 +114,15 @@ ped_stat <- function(ped, phenotyped=NULL){
 		"non-zero F" = sum(MCMCglmm::inverseA(ped[,1:3])$inbreeding>0),
 		"F > 0.125" = sum(MCMCglmm::inverseA(ped[,1:3])$inbreeding>0.125),
 
-		"mean pairwise relatedness" = sum(sp2[,3])/ (nrow(ped) * (nrow(ped) - 1) / 2 ),
+		"mean pairwise relatedness" = sum(sp2[,3])/ total_links,
+		"pairwise relatedness>=0.125" = sum(sp2[,3]>=0.125)/ total_links,
+    "pairwise relatedness>=0.25" = sum(sp2[,3]>=0.25)/ total_links,
+    "pairwise relatedness>=0.5" = sum(sp2[,3]>=0.5)/ total_links,
+    "var pairwise relatedness" = var(c(sp2[,3], rep(0,total_links-nrow(sp2)))),
+		"n pairwise relatedness>=0.125" = sum(sp2[,3]>=0.125),
+    "n pairwise relatedness>=0.25" = sum(sp2[,3]>=0.25),
+    "n pairwise relatedness>=0.5" = sum(sp2[,3]>=0.5)
 
-		"pairwise relatedness>=0.125" = sum(sp2[,3]>=0.125),
-    "pairwise relatedness>=0.25" = sum(sp2[,3]>=0.25),
-    "pairwise relatedness>=0.5" = sum(sp2[,3]>=0.5)
 	)
 	
 }
@@ -132,7 +136,14 @@ ped_stat <- function(ped, phenotyped=NULL){
 
 
 
-
+lambda_to_samp_var <- function(lambda,h2){
+		N <- length(lambda)
+	sapply(h2, function(x){
+		a <- sum( (lambda-1)^2 / (1 + x*(lambda-1))^2 )
+		b <- sum( (lambda-1) / (1 + x*(lambda-1)) )
+		2/(a-b^2/N)
+	})	
+}
 
 samp_var_h2 <- function(ped, h2){
 	A<-nadiv::makeA(ped[,1:3])
@@ -160,7 +171,7 @@ samp_var_h2_ext <- function(ped, h2){
 
 
 
-samp_var_sim <- function(ped, h2, m2=0){
+samp_var_sim <- function(ped, h2, m2=0, n_sim=200){
 	## give all individuals without a mother a dummy mother, so get a phenotype
 	ped_ds <- ped[,1:2]
 	ped_ds[,"dam"]<-as.character(ped_ds[,"dam"])
@@ -174,7 +185,7 @@ samp_var_sim <- function(ped, h2, m2=0){
 				residual=list(vcov=1-h2-m2)
 			),
 			pedigree=list(id=ped),
-			n_pop=200
+			n_pop=n_sim
 		),
 	list=TRUE)
 
