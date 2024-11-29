@@ -30,7 +30,7 @@ type <- sapply(strsplit(files,"\\."),function(x) x[2])
 peds<-lapply(1:length(files), function(i){
   ped <- read.table(paste0(wd,"Data/Raw/pedigrees/",files[i]),header=TRUE,sep=if(type[i]=="txt"){""}else{","}, na.strings=c("NA",0))
   ped2 <- data.frame(animal=ped[,1],dam=ped[,"dam"],sire=ped[,"sire"])
-  pedantics::fixPedigree(ped2)
+  pedtricks::fix_ped(ped2)
 })
 names(peds) <- files
 
