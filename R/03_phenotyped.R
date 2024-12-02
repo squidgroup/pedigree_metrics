@@ -75,8 +75,22 @@ samp_var_sim_missing <- function(ped, h2, n_sim=200){
 # samp_var_sim_missing(peds[[2]],0.3, n_sim=1000)
 
 all_missing <- sapply(peds,samp_var_sim_missing,0.3, n_sim=1000)
-save(all_missing,file=paste0(wd,"Data/Processed/ped_missing.Rdata"))
+save(peds,all_missing,file=paste0(wd,"Data/Processed/ped_missing.Rdata"))
 
+
+total_n<-sapply(peds,nrow)
+pheno_n<-sapply(peds,function(x)sum(!is.na(x$dam)))
+
+
+plot(total_n, sqrt(all_missing["var_all",]), log="xy", pch=19, col=scales::alpha(1,0.4), xlim=range(c(pheno_n,total_n)), ylim=range(sqrt(all_missing),na.rm=TRUE))
+points(total_n, sqrt(all_missing["var_missing",]), pch=19, col=scales::alpha("green",0.6))
+
+points(pheno_n, sqrt(all_missing["var_missing",]), pch=19, col=scales::alpha("blue",0.6))
+
+
+
+
+plot(t(sqrt(all_missing)))
 
 
 n<-sapply(peds, function(x){
