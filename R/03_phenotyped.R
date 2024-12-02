@@ -14,6 +14,16 @@ peds<-parallel::mclapply(1:length(files), function(i){
 }, mc.cores=6)
 
 
+lambdas <- parallel::mclapply(peds,function(ped){
+  subset_ids <- ped[!is.na(ped$dam),1]
+  A<-nadiv::makeA(ped)
+  A2<-A[subset_ids,subset_ids]
+
+  lambda1 <- eigen(A, symmetric=TRUE,only.values=TRUE)$values
+  lambda2 <- eigen(A2, symmetric=TRUE,only.values=TRUE)$values
+  list(lambda_full=lambda1,lambda_missing=lambda2)
+}, mc.cores=6)
+
 
 # load(paste0(wd,"Data/Processed/phenotyped.Rdata"))
 # plot(sim_all[2,],sim_juv[2,], log="xy")
@@ -75,7 +85,10 @@ samp_var_sim_missing <- function(ped, h2, n_sim=200){
 # samp_var_sim_missing(peds[[2]],0.3, n_sim=1000)
 
 all_missing <- sapply(peds,samp_var_sim_missing,0.3, n_sim=1000)
-save(peds,all_missing,file=paste0(wd,"Data/Processed/ped_missing.Rdata"))
+save(peds,all_missing,lambdas,file=paste0(wd,"Data/Processed/ped_missing.Rdata"))
+
+
+# load(paste0(wd,"Data/Processed/ped_missing.Rdata"))
 
 
 total_n<-sapply(peds,nrow)
