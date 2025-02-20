@@ -88,6 +88,11 @@ all_missing <- sapply(peds,samp_var_sim_missing,0.3, n_sim=1000)
 save(peds,all_missing,lambdas,file=paste0(wd,"Data/Processed/ped_missing.Rdata"))
 
 
+
+
+
+
+
 # load(paste0(wd,"Data/Processed/ped_missing.Rdata"))
 
 
