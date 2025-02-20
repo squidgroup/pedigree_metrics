@@ -36,7 +36,7 @@ names(peds) <- files
 
 # lapply(peds,head)
 # lapply(peds,tail)
-# lapply(peds,nrow)
+# table(sapply(peds,nrow))
 
 ####
 # Calculate eigenvalues for each pedigrees

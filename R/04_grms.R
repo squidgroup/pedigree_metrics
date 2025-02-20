@@ -69,9 +69,16 @@ koala_se <- sqrt(lambda_to_samp_var(koala_lambda,h2=0.3))
 
 ####
 
+setEPS()
+pdf(paste0(wd,"Figures/Fig_grm.pdf"), height=8, width=8)
+{
+
 plot(all_sv~n, log="xy", ylim=range(c(all_sv,s_se)), col=scales::alpha(1,0.5), pch=19, ylab="Estimated Standard Error")
 points(td_se~length(taz_devil_lambda),pch=19, col="red")
 points(s_se~length(s_lambda),pch=19, col="blue")
 points(dragon_se~length(dragon_lambda),pch=19, col="green")
 points(koala_se~length(koala_lambda),pch=19, col="orange")
+
+}
+dev.off()
 
