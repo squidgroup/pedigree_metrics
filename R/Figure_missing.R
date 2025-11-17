@@ -10,6 +10,10 @@ load(paste0(wd,"Data/Processed/ped_missing.Rdata"))
 total_n<-sapply(peds,nrow)
 pheno_n<-sapply(peds,function(x)sum(!is.na(x$dam)))
 
+missing_n <- (total_n - pheno_n)/total_n
+range(missing_n)
+hist(missing_n)
+
 all_sv <- sapply(lambdas,function(x) c(lambda_to_samp_var(x[["lambda_full"]],h2=0.3),lambda_to_samp_var(x[["lambda_missing"]],h2=0.3)))
 
 

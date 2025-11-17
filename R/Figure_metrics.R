@@ -85,6 +85,10 @@ for( i in metric_names){
 }
 dev.off()
 
+year_bin <- as.factor(year>2010)
+
+summary(glm(cbind(metric_year[,"average relatedness"],all_n-metric_year[,"average relatedness"])~year + year_bin, family="binomial"))
+
 
 colnames(metric_year)
 

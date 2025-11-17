@@ -29,7 +29,7 @@ par(mar=c(12,4,1,1))
 boxplot(n~paste(taxa,species_english),si, las=2, at=c(2: 19, 22:35, 38:39),names=taxa_names)
 
 boxplot(n~taxa,si,add=TRUE, at= c(1,21,37), col=2:5, yaxt="n")
-abline(v=c(20,37))
+abline(v=c(20,36))
 
 
 

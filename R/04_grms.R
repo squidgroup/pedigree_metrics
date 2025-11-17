@@ -70,15 +70,15 @@ koala_se <- sqrt(lambda_to_samp_var(koala_lambda,h2=0.3))
 ####
 
 setEPS()
-pdf(paste0(wd,"Figures/Fig_grm.pdf"), height=8, width=8)
+pdf(paste0(wd,"Figures/Fig_grm.pdf"), height=5, width=6)
 {
-
-plot(all_sv~n, log="xy", ylim=range(c(all_sv,s_se)), col=scales::alpha(1,0.5), pch=19, ylab="Estimated Standard Error")
+par(mar=c(4,4,1,1))
+plot(all_sv~n, log="xy", ylim=range(c(all_sv,s_se)), col=scales::alpha(1,0.5), pch=19, ylab="V-G Standard Error", xlab="N")
 points(td_se~length(taz_devil_lambda),pch=19, col="red")
 points(s_se~length(s_lambda),pch=19, col="blue")
 points(dragon_se~length(dragon_lambda),pch=19, col="green")
 points(koala_se~length(koala_lambda),pch=19, col="orange")
-
+legend("topright",c("pedigrees","stickleback","dragon","Taz. devil","koala"), pch=19, col=c(scales::alpha(1,0.5), "blue","green","red","orange"))
 }
 dev.off()
 

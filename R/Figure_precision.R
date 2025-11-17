@@ -17,7 +17,7 @@ all_sim <- all_sim[,colnames(all_sim) %in% colnames(all_stat)]
 lambdas <- lambdas[names(lambdas) %in% colnames(all_stat)]
 all_sv <- sapply(lambdas,lambda_to_samp_var,h2=0.3)
 
-# all_mde <- all_mde[,!colnames(all_mde) %in% c("D33.csv","D38.txt")]
+# all_mde <- all_mde[,!colnames(all_mde) %in% c("D29.csv","D33.csv","D38.txt","D37.csv")]
 
 files<-list.files(paste0(wd,"Data/Raw/pedigrees"))
 id <- gsub("\\.|[a-z]","",files)
@@ -77,5 +77,6 @@ lines(preds~exp(x), col="red")
 
 }
 dev.off()
+
 
 # plot(all_stat[2,],all_mde[3,],pch=19, ylab="Minimum detectable effect",xlab="Number of maternities", xlim=c(0,11000))
