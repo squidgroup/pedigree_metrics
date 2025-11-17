@@ -170,6 +170,14 @@ samp_var_h2_ext <- function(ped, h2){
 # minimum detectable effect
 
 
+samp_var_h2_simple <- function(ped){
+	sp<-Matrix::summary(nadiv::makeA(ped[,1:3]))
+	sp2<-sp[sp[,1]!=sp[,2],]
+	total_links <- (nrow(ped) * (nrow(ped) - 1) / 2 )
+	var_a <- 	var(c(sp2[,3], rep(0,total_links-nrow(sp2))))
+	N <- nrow(ped)
+	2/(N^2 * var_a)
+}
 
 samp_var_sim <- function(ped, h2, m2=0, n_sim=200){
 	## give all individuals without a mother a dummy mother, so get a phenotype

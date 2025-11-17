@@ -9,13 +9,17 @@ load(paste0(wd,"Data/Processed/ped_stats.Rdata"))
 load(paste0(wd,"Data/Processed/ped_sims.Rdata"))
 load(paste0(wd,"Data/Processed/ped_lambdas.Rdata"))
 load(paste0(wd,"Data/Processed/ped_mde.Rdata"))
+load(paste0(wd,"Data/Processed/ped_h2_se_simple.Rdata"))
 
 all_stat <- all_stat[,colnames(all_stat) %in% colnames(all_sim)]
 
 all_sim <- all_sim[,colnames(all_sim) %in% colnames(all_stat)]
 
+all_h2_se_simple <- all_h2_se_simple[names(all_h2_se_simple) %in% colnames(all_stat)]
+
 lambdas <- lambdas[names(lambdas) %in% colnames(all_stat)]
 all_sv <- sapply(lambdas,lambda_to_samp_var,h2=0.3)
+
 
 # all_mde <- all_mde[,!colnames(all_mde) %in% c("D33.csv","D38.txt")]
 
@@ -55,6 +59,10 @@ abline(0,1)
 
 }
 dev.off()
+
+plot(sqrt(all_sim[2,]),sqrt(all_h2_se_simple))
+abline(0,1)
+
 
 # summary(lm(log(sqrt(all_sim[2,]))~log(sqrt(all_sv))))$adj.r.squared
 

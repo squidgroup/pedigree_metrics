@@ -3,7 +3,8 @@ rm(list=ls())
 wd <- "/Users/joelpick/github/pedigree_metrics/"
 
 source(paste0(wd,"R/00_functions.R"))
-library(asreml)
+# library(asreml)
+library(gremlin)
 
 
 # null<- function()
@@ -48,6 +49,16 @@ lambdas <- parallel::mclapply(peds,function(ped){
 }, mc.cores=6)
 
 save(lambdas,file=paste0(wd,"Data/Processed/ped_lambdas.Rdata"))
+
+
+####
+# Calculate Visscher et al. sampling variance for each pedigrees
+####
+
+all_h2_se_simple <- sapply(peds,function(ped){
+  samp_var_h2_simple(ped[,1:3])
+})
+save(all_h2_se_simple,file=paste0(wd,"Data/Processed/ped_h2_se_simple.Rdata"))
 
 
 ####
