@@ -34,7 +34,7 @@ s_se <- sqrt(lambda_to_samp_var(s_lambda,h2=0.3))
 
 ####
 
-taz_devil <- as.matrix(read.table(paste0(wd,"/Data/Raw/grms/taz_deveil_grm.csv"), sep=",", header=TRUE, row.names=1))
+taz_devil <- as.matrix(read.table(paste0(wd,"/Data/Raw/grms/taz_devil_grm.csv"), sep=",", header=TRUE, row.names=1))
 
 nrow(taz_devil)
 
@@ -69,15 +69,51 @@ koala_se <- sqrt(lambda_to_samp_var(koala_lambda,h2=0.3))
 
 ####
 
+soays_grm <- as.matrix(read.table(paste0(wd,"/Data/Raw/grms/soays_GRM.txt"),header=TRUE))
+class(soays)
+soays_lambda <- eigen(soays_grm, symmetric=TRUE,only.values=TRUE)$values
+
+soays_se <-sqrt(lambda_to_samp_var(soays_lambda,h2=0.3))
+
+soays[1:10,1:10]
+
+
+####
+load(paste0(wd,"/Data/Raw/grms/roe_deer_grm.Rdata"))
+
+roe_grm<-b
+roe_lambda <- eigen(roe_grm, symmetric=TRUE,only.values=TRUE)$values
+roe_se <-sqrt(lambda_to_samp_var(roe_lambda,h2=0.3))
+
+
+####
+
+save(roe_lambda,soays_lambda,koala_lambda,dragon_lambda,taz_devil_lambda,s_lambda,file=paste0(wd,"/Data/Processed/GRM_lambdas.Rdata"))
+
+####
+
 setEPS()
 pdf(paste0(wd,"Figures/Fig_grm.pdf"), height=8, width=8)
 {
 
 plot(all_sv~n, log="xy", ylim=range(c(all_sv,s_se)), col=scales::alpha(1,0.5), pch=19, ylab="Estimated Standard Error")
-points(td_se~length(taz_devil_lambda),pch=19, col="red")
-points(s_se~length(s_lambda),pch=19, col="blue")
-points(dragon_se~length(dragon_lambda),pch=19, col="green")
-points(koala_se~length(koala_lambda),pch=19, col="orange")
+points(td_se~length(taz_devil_lambda),pch=21, cex=1.5, col="red",bg="red")
+points(s_se~length(s_lambda),pch=22, cex=1.5, col="blue",bg="blue")
+points(dragon_se~length(dragon_lambda),pch=23, cex=1.5, col="green",bg="green")
+points(koala_se~length(koala_lambda),pch=24, cex=1.5, col="orange",bg="orange")
+
+points(roe_se~length(roe_lambda),pch=25, cex=1.5, col="purple",bg="purple")
+
+points(soays_se~length(soays_lambda),pch=21, cex=1.5, col="pink",bg="pink")
+
+legend(
+	"topright",
+	c("pedigrees","Taz. Devil","Stickleback","Dragon","Koala","Roe Deer","Soay Sheep"),
+	pch=c(19,21:25,21),
+	pt.bg=c(scales::alpha(1,0.5),"red","blue","green","orange","purple","pink"),
+	col=c(scales::alpha(1,0.5),"red","blue","green","orange","purple","pink")
+
+	)
 
 }
 dev.off()
