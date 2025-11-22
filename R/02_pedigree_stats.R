@@ -92,6 +92,17 @@ all_sim <- sapply(peds,samp_var_sim,h2=0.3,n_sim=1000)
 save(all_sim,file=paste0(wd,"Data/Processed/ped_sims.Rdata"))
 
 
+set.seed(20251119)
+all_sim_low <- sapply(peds,samp_var_sim,h2=0.1,n_sim=1000)
+
+save(all_sim_low,file=paste0(wd,"Data/Processed/ped_sims_low.Rdata"))
+
+
+set.seed(20251120)
+all_sim_high <- sapply(peds,samp_var_sim,h2=0.5,n_sim=1000)
+
+save(all_sim_high,file=paste0(wd,"Data/Processed/ped_sims_high.Rdata"))
+
 ####
 # Calculate minimum detectable effect for each pedigrees via simulation
 ####

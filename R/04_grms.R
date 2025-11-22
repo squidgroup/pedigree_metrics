@@ -82,3 +82,11 @@ legend("topright",c("pedigrees","stickleback","dragon","Taz. devil","koala"), pc
 }
 dev.off()
 
+# grm_vars<-c(var(dragon_grm[lower.tri(dragon_grm)]),
+# var(koala_grm[lower.tri(koala_grm)]),
+# var(taz_devil[lower.tri(taz_devil)]),
+# var(s_grm[lower.tri(s_grm)])
+# )
+# hist(c(all_stat2[24,]))
+# abline(v=grm_vars)
+

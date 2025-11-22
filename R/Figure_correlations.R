@@ -12,7 +12,7 @@ all_stat[all_stat==0]<-NA
 
 m <- cor(t(all_stat[1:24,]),use="pairwise.complete.obs")
 colnames(m) <- rownames(m) <- gsub("pairwise relatedness","r",rownames(m)) 
-colnames(m) <- rownames(m) <- gsub("pedigree depth","PD",rownames(m))
+colnames(m) <- rownames(m) <- gsub("pedigree depth","depth",rownames(m))
 colnames(m) <- rownames(m) <- gsub("mean maternal sibsip size", "mat. sib. size",rownames(m))
 colnames(m) <- rownames(m) <- gsub("mean paternal sibsip size", "pat. sib. size",rownames(m))
 # corrplot(m, order = 'FPC', diag = FALSE, method = 'square')#, tl.pos = 'd')

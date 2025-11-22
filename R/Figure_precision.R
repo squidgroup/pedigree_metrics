@@ -35,7 +35,29 @@ includes0<-apply(all_stat,1,function(x)any(x==0))
 all_stat2<-all_stat
 all_stat2[includes0,]<-all_stat2[includes0,]+0.5
 
+r2s <- rep(NA,23)
+for(i in 1:24){
+ r2s[i] <- summary(lm(log(sqrt(all_sim[2,]))~log(all_stat2[i,])))$adj.r.squared
+}
 
+r2s <- apply(all_stat2,1,function(x){
+   summary(lm(log(sqrt(all_sim[2,]))~log(x)))$adj.r.squared
+})
+
+
+par(mar=c(0,0,0,0))
+plot(NA, xlim=c(-5,4),ylim=c(0,27))
+
+text(rep(2,24),24:1,names(r2s)[1:24], adj=1)
+text(rep(3,24),24:1,round(r2s,3)[1:24], col=viridis::viridis(20)[20:1][as.numeric(cut(r2s,seq(0,1,0.05)))])
+abline(v=2.25, col="grey")
+abline(h=25, col="grey")
+text(c(3),c(26),c("R2"))
+text(c(2),c(26),c("Metric"), adj=1)
+
+
+# summary(lm(log(sqrt(all_sim[2,]))~log(all_stat2[24,])+log(all_stat2[2,]) ))
+# var(all_stat2[24,])
 
 setEPS()
 pdf(paste0(wd,"Figures/Fig_precision.pdf"), height=8, width=14)

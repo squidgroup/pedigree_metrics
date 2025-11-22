@@ -197,15 +197,24 @@ samp_var_sim <- function(ped, h2, m2=0, n_sim=200){
 		),
 	list=TRUE)
 
-	assign("ped.ainv", asreml::ainverse(ped), envir = .GlobalEnv)
+	assign("ped.ainv", nadiv::makeAinv(ped)$Ainv, envir = .GlobalEnv)
 
 	sims<-c(parallel::mclapply(data, function(x){
 		x$id <- as.factor(x$id)
-		mod_1 <- asreml::asreml(
-				fixed= y~1
-				, random= ~vm(id,ped.ainv)
-			  , data= x, trace=FALSE)
-		summary(mod_1)$varcomp["vm(id, ped.ainv)",1]
+			mod_1 <- gremlin::gremlin(
+				y~1
+				, random= ~id
+			  , data= x
+				, ginverse = list(id = ped.ainv)
+				,v=0
+			  )
+	  summary(mod_1)$varcompSummary["G.id","Estimate"]
+
+		# mod_1 <- asreml::asreml(
+		# 		fixed= y~1
+		# 		, random= ~vm(id,ped.ainv)
+		# 	  , data= x, trace=FALSE)
+		# summary(mod_1)$varcomp["vm(id, ped.ainv)",1]
 	},mc.cores=6), recursive=TRUE)	
 	rm("ped.ainv", envir = .GlobalEnv)
 	c(mean=mean(sims),var=var(sims))
