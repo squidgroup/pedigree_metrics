@@ -46,6 +46,8 @@ names(peds) <- files
 lambdas <- parallel::mclapply(peds,function(ped){
   A<-nadiv::makeA(ped[,1:3])
   lambda <- eigen(A, symmetric=TRUE,only.values=TRUE)$values
+  cat("I ")
+  lambda
 }, mc.cores=6)
 
 save(lambdas,file=paste0(wd,"Data/Processed/ped_lambdas.Rdata"))
