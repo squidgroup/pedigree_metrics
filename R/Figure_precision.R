@@ -7,105 +7,76 @@ source(paste0(wd,"R/00_functions.R"))
 
 load(paste0(wd,"Data/Processed/ped_stats.Rdata"))
 load(paste0(wd,"Data/Processed/ped_sims.Rdata"))
-load(paste0(wd,"Data/Processed/ped_lambdas.Rdata"))
-load(paste0(wd,"Data/Processed/ped_mde.Rdata"))
-load(paste0(wd,"Data/Processed/ped_h2_se_simple.Rdata"))
 
-all_stat <- all_stat[,colnames(all_stat) %in% colnames(all_sim)]
 
-all_sim <- all_sim[,colnames(all_sim) %in% colnames(all_stat)]
+all_sim_se <- sqrt(all_sim[2,])
 
-all_h2_se_simple <- all_h2_se_simple[names(all_h2_se_simple) %in% colnames(all_stat)]
 
-lambdas <- lambdas[names(lambdas) %in% colnames(all_stat)]
-all_sv <- sapply(lambdas,lambda_to_samp_var,h2=0.3)
-
-# all_mde <- all_mde[,!colnames(all_mde) %in% c("D29.csv","D33.csv","D38.txt","D37.csv")]
-
-files<-list.files(paste0(wd,"Data/Raw/pedigrees"))
-id <- gsub("\\.|[a-z]","",files)
-
-studies_info <- read.csv(paste0(wd,"Data/Raw/studies_info.csv"))
-dryad_ped_info <- read.csv(paste0(wd,"Data/Raw/dryad_ped_info.csv"))
-all_ped_info <- rbind(studies_info[,c("id","species_english","taxonomic.class")], dryad_ped_info[,c("id","species_english","taxonomic.class")])
-
-si <- all_ped_info[match(id,all_ped_info$id),c("id","species_english","taxonomic.class")]
-
+# if a metric includes 0s, add 0.5
 includes0<-apply(all_stat,1,function(x)any(x==0))
 all_stat2<-all_stat
 all_stat2[includes0,]<-all_stat2[includes0,]+0.5
 
-r2s <- rep(NA,23)
-for(i in 1:24){
- r2s[i] <- summary(lm(log(sqrt(all_sim[2,]))~log(all_stat2[i,])))$adj.r.squared
-}
 
 r2s <- apply(all_stat2,1,function(x){
-   summary(lm(log(sqrt(all_sim[2,]))~log(x)))$adj.r.squared
+   summary(lm(log(all_sim_se)~log(x)))$adj.r.squared
 })
 
 
-par(mar=c(0,0,0,0))
-plot(NA, xlim=c(-5,4),ylim=c(0,27))
-
-text(rep(2,24),24:1,names(r2s)[1:24], adj=1)
-text(rep(3,24),24:1,round(r2s,3)[1:24], col=viridis::viridis(20)[20:1][as.numeric(cut(r2s,seq(0,1,0.05)))])
-abline(v=2.25, col="grey")
-abline(h=25, col="grey")
-text(c(3),c(26),c("R2"))
-text(c(2),c(26),c("Metric"), adj=1)
-
-
-# summary(lm(log(sqrt(all_sim[2,]))~log(all_stat2[24,])+log(all_stat2[2,]) ))
-# var(all_stat2[24,])
+###############
+## precision Figure
+###############
 
 setEPS()
-pdf(paste0(wd,"Figures/Fig_precision.pdf"), height=8, width=14)
+pdf(paste0(wd,"Figures/Fig_precision.pdf"), height=6, width=12)
+{
+
+  layout(matrix(c(1,2),ncol=2),width=c(1,2))
+  par(mar=c(1,1,1,1))
+  plot(NA, xlim=c(-3,4),ylim=c(1,25),bty="n", xaxt="n", yaxt="n")
+
+  text(rep(2,23),23:1,names(r2s)[1:23], adj=1)
+  text(rep(3,23),23:1,round(r2s,3)[1:23], col=viridis::viridis(20)[20:1][as.numeric(cut(r2s,seq(0,1,0.05)))])
+  abline(v=2.25, col="grey")
+  abline(h=24, col="grey")
+  text(c(3),c(25),c(expression(italic(R^2))), cex=1.2)
+  text(c(2),c(25),c("Metric"), adj=1, cex=1.2)
+  mtext("a)", side=3, adj=0.,padj=1, cex=2)
+
+
+  maternities <- as.numeric(all_stat2["maternities",])
+  par(mar=c(5,5,3,1))
+
+  plot(maternities,all_sim_se,pch=19, ylab="Expected SE when h2=0.3",xlab="Number of maternities", xlim=c(0,11000), col= scales::alpha(1,0.5), ylim=c(0,0.2), cex.lab=1.5)
+
+  x<-seq(min(log(maternities)),max(log(maternities)),0.1)
+  preds <- as.vector(exp(model.matrix(~ x) %*% coef(lm(log(all_sim_se)~log(maternities)))))
+
+  lines(preds~exp(x), col="red")
+  mtext("b)", side=3, adj=-0.15,padj=-0.5, cex=2)
+  text(8000,0.15, as.expression(bquote(italic(R^2)~"="~.(round(r2s["maternities"],3)))), cex=2)
+}
+dev.off()
+
+
+
+
+###
+# Supplementary Figure with relationships between precision and  all metrics plotted out
+###
+
+setEPS()
+pdf(paste0(wd,"Figures/FigSM_precision_all.pdf"), height=8, width=14)
 
 {
 par(mfrow=c(4,6),mar=c(3.5,3,2,1),mgp=c(2,0.5,0))#mar=c(2,2,3,1))
 for(i in 1:23){
 
- r2 <- summary(lm(log(sqrt(all_sim[2,]))~log(all_stat2[i,])))$adj.r.squared
+  stat <- as.numeric(all_stat2[i,])
 
- plot(all_stat2[i,],sqrt(all_sim[2,]),pch=19, col= scales::alpha(1,0.5),xlab=rownames(all_stat)[i], ylab="Expected SE", log="xy", main=paste0("r2=",round(r2,3)))# , col=c(4,3,2,1)[as.factor(si$taxonomic.class)]
- # text(25, min(log(all_stat[i,]))+(max(log(all_stat[i,]))-min(log(all_stat[i,])))/10,rownames(all_stat)[i])
-}
+ r2 <- summary(lm(log(all_sim_se)~log(stat)))$adj.r.squared
 
-r2 <- summary(lm(log(sqrt(all_sim[2,]))~log(sqrt(all_sv))))$adj.r.squared
+ plot(stat,all_sim_se,pch=19, col= scales::alpha(1,0.5),xlab=rownames(all_stat)[i], ylab="Expected SE", log="xy", main=paste0("r2=",round(r2,3)))
 
-# plot(all_sim[2,],all_m,pch=19, log="xy", main="Visscher & Goddard 2015")
-plot(sqrt(all_sv),sqrt(all_sim[2,]),pch=19, log="xy", xlab="V-G SE", ylab="Expected SE", col= scales::alpha(1,0.5), main=paste0("r2=",round(r2,3)))
-abline(0,1)
-
-}
+}}
 dev.off()
-
-plot(sqrt(all_sim[2,]),sqrt(all_h2_se_simple))
-abline(0,1)
-
-
-# summary(lm(log(sqrt(all_sim[2,]))~log(sqrt(all_sv))))$adj.r.squared
-
-
-###############
-## MDE
-###############
-
-setEPS()
-pdf(paste0(wd,"Figures/Fig_precision_mat.pdf"), height=5, width=7)
-{
-  par(mfrow=c(1,1), mar=c(5,5,1,1))
-
-plot(all_stat[2,],sqrt(all_sim[2,]),pch=19, ylab="Expected SE when h2=0.3",xlab="Number of maternities", xlim=c(0,11000), col= scales::alpha(1,0.5), ylim=c(0,0.2))
-
-x<-seq(min(log(all_stat2["maternities",])),max(log(all_stat2["maternities",])),0.1)
-preds <- as.vector(exp(model.matrix(~ x) %*% coef(lm(log(sqrt(all_sim[2,]))~log(all_stat2["maternities",])))))
-
-lines(preds~exp(x), col="red")
-
-}
-dev.off()
-
-
-# plot(all_stat[2,],all_mde[3,],pch=19, ylab="Minimum detectable effect",xlab="Number of maternities", xlim=c(0,11000))

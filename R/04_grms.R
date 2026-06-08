@@ -70,12 +70,12 @@ koala_se <- sqrt(lambda_to_samp_var(koala_lambda,h2=0.3))
 ####
 
 soays_grm <- as.matrix(read.table(paste0(wd,"/Data/Raw/grms/soays_GRM.txt"),header=TRUE))
-class(soays)
+# class(soays)
 soays_lambda <- eigen(soays_grm, symmetric=TRUE,only.values=TRUE)$values
 
 soays_se <-sqrt(lambda_to_samp_var(soays_lambda,h2=0.3))
 
-soays[1:10,1:10]
+# soays[1:10,1:10]
 
 
 ####
