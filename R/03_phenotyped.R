@@ -17,17 +17,7 @@ peds<-parallel::mclapply(1:length(files), function(i){
 names(peds) <- files
 
 
-## function to go from eigenvalue of A matrix to approximation of sampling variance for h2
-lambda_to_samp_var <- function(lambda,h2){
-    N <- length(lambda)
-  sapply(h2, function(x){
-    a <- sum( (lambda-1)^2 / (1 + x*(lambda-1))^2 )
-    b <- sum( (lambda-1) / (1 + x*(lambda-1)) )
-    2/(a-b^2/N)
-  })  
-}
-
-all_sv_missing <- parallel::mclapply(peds,function(ped){
+all_sv_missing <- do.call(rbind,parallel::mclapply(peds,function(ped){
   subset_ids <- ped[!is.na(ped$dam),1]
   A<-nadiv::makeA(ped)
   A2<-A[subset_ids,subset_ids]
@@ -38,7 +28,7 @@ all_sv_missing <- parallel::mclapply(peds,function(ped){
   c(full=lambda_to_samp_var(lambda1, h2=0.3),
   missing=lambda_to_samp_var(lambda2, h2=0.3))
 
-}, mc.cores=6)
+}, mc.cores=6))
 
 
 
@@ -66,7 +56,7 @@ samp_var_sim_missing <- function(ped, h2, n_sim=200){
     ),
   list=TRUE)
 
-  assign("ped.ainv", asreml::ainverse(ped), envir = .GlobalEnv)
+  assign("ped.ainv", nadiv::makeAinv(ped)$Ainv, envir = .GlobalEnv)
 
 # x<-data[[8]]
   sims<-do.call(rbind,parallel::mclapply(data, function(x){
@@ -75,22 +65,39 @@ samp_var_sim_missing <- function(ped, h2, n_sim=200){
 
     data_missing <- x[!is.na(ped[,"dam"]),]
 
-    mod_1 <- asreml::asreml(
-        fixed= y~1
-        , random= ~vm(id,ped.ainv)
-        , data= x, trace=FALSE)
+    mod_1 <- gremlin::gremlin(
+            y~1
+            , random= ~id
+            , data= x
+            , ginverse = list(id = ped.ainv)
+            ,v=0
+            )
+
+    # mod_1 <- asreml::asreml(
+    #     fixed= y~1
+    #     , random= ~vm(id,ped.ainv)
+    #     , data= x, trace=FALSE)
     va_mod_2<- tryCatch({
-      mod_2 <- asreml::asreml(
-        fixed= y~1
-        , random= ~vm(id,ped.ainv)
-        , data= data_missing, trace=FALSE)
-      summary(mod_2)$varcomp["vm(id, ped.ainv)",1]
+     
+      mod_2 <- gremlin::gremlin(
+        y~1
+        , random= ~id
+        , data= data_missing
+        , ginverse = list(id = ped.ainv)
+        ,v=0
+        )
+      # mod_2 <- asreml::asreml(
+      #   fixed= y~1
+      #   , random= ~vm(id,ped.ainv)
+      #   , data= data_missing, trace=FALSE)
+      # summary(mod_2)$varcomp["vm(id, ped.ainv)",1]
+      summary(mod_2)$varcompSummary["G.id","Estimate"]
+
       },
     error=function(e)0)
     
-    c(summary(mod_1)$varcomp["vm(id, ped.ainv)",1],va_mod_2)
+    c(summary(mod_1)$varcompSummary["G.id","Estimate"],va_mod_2)
       
-
   },mc.cores=6))  
   rm("ped.ainv", envir = .GlobalEnv)
   c(var_all=var(sims[,1]),var_missing=var(sims[,2]))
