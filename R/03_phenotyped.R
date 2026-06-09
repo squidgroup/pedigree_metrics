@@ -1,4 +1,5 @@
 rm(list=ls())
+library(gremlin)
 
 wd <- "/Users/joelpick/github/pedigree_metrics/"
 
@@ -100,6 +101,7 @@ samp_var_sim_missing <- function(ped, h2, n_sim=200){
       
   },mc.cores=6))  
   rm("ped.ainv", envir = .GlobalEnv)
+  cat("I ")
   c(var_all=var(sims[,1]),var_missing=var(sims[,2]))
 }
 
@@ -107,4 +109,5 @@ samp_var_sim_missing <- function(ped, h2, n_sim=200){
 
 all_missing <- sapply(peds,samp_var_sim_missing,0.3, n_sim=1000)
 save(peds,all_missing,all_sv_missing,file=paste0(wd,"Data/Processed/ped_missing.Rdata"))
+#save(peds,all_missing,file=paste0(wd,"Data/Processed/ped_missing2.Rdata"))
 
