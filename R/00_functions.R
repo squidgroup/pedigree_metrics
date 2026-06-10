@@ -57,10 +57,12 @@ MDE_sim <- function(ped,n_sims=1000){
 	c(mean=mean(sims),var=var(sims), MDE=quantile(sims,0.95))
 }
 
-# grm<-as(stickleback,"dgCMatrix")
+# grm<-stickleback
 # h2=0.3
-#  n_sim=1
+#  n_sim=10
 samp_var_sim_GRM <- function(grm, h2=0.3, n_sim=200){
+
+	grm<-as(as.matrix(Matrix::nearPD(grm)$mat),"dgCMatrix")
 
 	data<-squidSim::get_population_data(
 		squidSim::simulate_population(
@@ -73,7 +75,7 @@ samp_var_sim_GRM <- function(grm, h2=0.3, n_sim=200){
 			n_pop=n_sim
 		),
 	list=TRUE)
-x<- data.frame(id=rownames(grm), y=rnorm(nrow(grm)))
+# x<- data.frame(id=rownames(grm), y=rnorm(nrow(grm)))
 	ainv <- solve(grm)
 	# assign("ped.ainv", nadiv::makeAinv(ped)$Ainv, envir = .GlobalEnv)
 
@@ -94,7 +96,7 @@ x<- data.frame(id=rownames(grm), y=rnorm(nrow(grm)))
 		# 	  , data= x, trace=FALSE)
 		# summary(mod_1)$varcomp["vm(id, ped.ainv)",1]
 	},mc.cores=6), recursive=TRUE)	
-	rm("ped.ainv", envir = .GlobalEnv)
+	# rm("ainv", envir = .GlobalEnv)
 	c(mean=mean(sims),var=var(sims))
 }
 
