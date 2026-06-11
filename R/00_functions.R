@@ -57,7 +57,7 @@ MDE_sim <- function(ped,n_sims=1000){
 	c(mean=mean(sims),var=var(sims), MDE=quantile(sims,0.95))
 }
 
-# grm<-stickleback
+# grm<-soays_grm
 # h2=0.3
 #  n_sim=10
 samp_var_sim_GRM <- function(grm, h2=0.3, n_sim=200){
