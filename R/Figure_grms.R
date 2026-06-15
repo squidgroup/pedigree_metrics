@@ -32,7 +32,7 @@ pdf(paste0(wd,"Figures/Fig_grm.pdf"), height=5, width=10)
 	par(mfrow=c(1,2), mar=c(5,5,1,1), cex.lab=1.5)
 
 	plot(all_se_sim~n, log="xy", ylim=range(c(all_se,grm_dat2[,"se"])), col=scales::alpha(1,0.5), pch=19, ylab="Expected Standard Error", xlab="N")
-	points(se~n,grm_dat2, pch=grm_dat2[,"pch"], bg=grm_dat2[,"col"], col=grm_dat2[,"col"], cex=1.5)
+	points(sqrt(var)~n,grm_dat3, pch=grm_dat3[,"pch"], bg=grm_dat3[,"col"], col=grm_dat3[,"col"], cex=1.5)
 
 	legend(
 		"topright",
