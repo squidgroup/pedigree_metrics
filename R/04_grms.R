@@ -101,6 +101,8 @@ roe_lambda <- eigen(roe_grm, symmetric=TRUE,only.values=TRUE)$values
 roe_se <-sqrt(lambda_to_samp_var(roe_lambda,h2=0.3))
 roe_sim <- samp_var_sim_GRM(roe_grm, h2=0.3, n_sim=1000)
 
+
+## this one takes ages to run!! 
 set.seed(202606116)
 soays_lambda <- eigen(soays_grm, symmetric=TRUE,only.values=TRUE)$values
 soays_se <-sqrt(lambda_to_samp_var(soays_lambda,h2=0.3))
