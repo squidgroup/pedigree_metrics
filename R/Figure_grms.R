@@ -15,11 +15,11 @@ load(file=paste0(wd,"/Data/Processed/grm_dat.Rdata"))
 load(file=paste0(wd,"/Data/Processed/grm_sims.Rdata"))
 
 grm_dat2 <-cbind(as.data.frame(grm_dat),
-	col=c("red","blue","green","orange","purple","pink"),
-	pch=c(21:25,21)
+	col=c("red","blue","green","orange","purple","pink","green"),
+	pch=c(21:25,21,23)
 	)
 
-grm_dat3<- cbind(grm_dat2[rownames(grm_sim),],grm_sim)
+# grm_dat3<- cbind(grm_dat2[rownames(grm_sim),],grm_sim)
 
 
 all_se <- sqrt(all_sv[,2])
@@ -32,7 +32,7 @@ pdf(paste0(wd,"Figures/Fig_grm.pdf"), height=5, width=10)
 	par(mfrow=c(1,2), mar=c(5,5,1,1), cex.lab=1.5)
 
 	plot(all_se_sim~n, log="xy", ylim=range(c(all_se,grm_dat2[,"se"])), col=scales::alpha(1,0.5), pch=19, ylab="Expected Standard Error", xlab="N")
-	points(sqrt(var)~n,grm_dat3, pch=grm_dat3[,"pch"], bg=grm_dat3[,"col"], col=grm_dat3[,"col"], cex=1.5)
+	points(sqrt(var)~n,grm_dat2, pch=grm_dat2[,"pch"], bg=grm_dat2[,"col"], col=grm_dat2[,"col"], cex=1.5)
 
 	legend(
 		"topright",
@@ -42,17 +42,17 @@ pdf(paste0(wd,"Figures/Fig_grm.pdf"), height=5, width=10)
 		col=c(scales::alpha(1,0.5),grm_dat2[,"col"])
 	)
 
-  mtext("a)", side=3, adj=-0.2,padj=1, cex=2)
+  mtext("a)", side=3, adj=-0.25,padj=1, cex=2)
 
 
 
 
 	plot(all_se_sim~all_se, log="xy", ylim=range(c(all_se,grm_dat[,"se"])),, xlim=range(c(all_se,grm_dat[,"se"])), col=scales::alpha(1,0.5), pch=19, ylab="Expected Standard Error", xlab=expression(italic(SE[h^2]^{(2)} )))
 	
-	points(sqrt(var)~se,grm_dat3, pch=grm_dat3[,"pch"], bg=grm_dat3[,"col"], col=grm_dat3[,"col"], cex=1.5)
+	points(sqrt(var)~se,grm_dat2, pch=grm_dat2[,"pch"], bg=grm_dat2[,"col"], col=grm_dat2[,"col"], cex=1.5)
 	abline(0,1)
 
-  mtext("b)", side=3, adj=-0.2,padj=1, cex=2)
+  mtext("b)", side=3, adj=-0.25,padj=1, cex=2)
 
 
 }

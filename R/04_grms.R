@@ -7,23 +7,26 @@ source(paste0(wd,"R/00_functions.R"))
 library(gremlin)
 library(Matrix)
 
+convert_grm <- function(grm) Matrix::nearPD(grm,base.matrix = TRUE,ensureSymmetry=TRUE)$mat
+
 
 ####
 stickleback <- as.matrix(read.csv(paste0(wd,"/Data/Raw/grms/stickleback_GRM.csv"),row.names=1))
 
 stickleback[upper.tri(stickleback)]<-t(stickleback)[upper.tri(stickleback)]
-# chol(as(stickleback,"dgCMatrix"))
 # stickleback[1:10,1:10]
+
+s_grm<-convert_grm(stickleback)
+
 
 ####
 
 taz_devil <- as.matrix(read.table(paste0(wd,"/Data/Raw/grms/taz_devil_grm.csv"), sep=",", header=TRUE, row.names=1))
-
-# nrow(taz_devil)
 # taz_devil[1:10,1:10]
-isSymmetric(taz_devil)
 
-td_grm<-forceSymmetric(taz_devil)
+td_grm<-convert_grm(taz_devil)
+
+
 
 ####
 make_grm <- function(df){
@@ -34,10 +37,12 @@ make_grm <- function(df){
 }
 
 dragon <- read.table(paste0(wd,"/Data/Raw/grms/dragon_GRM_2020.txt"),header=TRUE)
-dragon_grm <- make_grm(dragon)
-# dragon_grm[1:10,1:10]
 
-isSymmetric(dragon_grm)
+dragon_grm_raw<-matrix(dragon[,3],nrow=sqrt(nrow(dragon)),ncol=sqrt(nrow(dragon)))
+colnames(dragon_grm_raw)<-rownames(dragon_grm_raw)<-1:nrow(dragon_grm_raw)
+
+dragon_grm <- convert_grm(dragon_grm_raw)
+# dragon_grm[1:10,1:10]
 
 
 ####
@@ -47,18 +52,17 @@ koala2 <- sapply(koala[,1], function(x){
 	y<-strsplit(x," ")[[1]]
 	as.numeric(y[length(y)])
 	})
-# hist(koala2, breaks=100)
 
-koala_grm<-matrix(koala2,nrow=sqrt(length(koala2)),ncol=sqrt(length(koala2)))
-colnames(koala_grm)<-rownames(koala_grm)<-1:nrow(koala_grm)
+koala_grm_raw<-matrix(koala2,nrow=sqrt(length(koala2)),ncol=sqrt(length(koala2)))
+colnames(koala_grm_raw)<-rownames(koala_grm_raw)<-1:nrow(koala_grm_raw)
+koala_grm <- convert_grm(koala_grm_raw)
 # koala_grm[1:10,1:10]
-isSymmetric(koala_grm)
 
 ####
-library(Matrix)
-soays_grm <- as.matrix(read.table(paste0(wd,"/Data/Raw/grms/soays_GRM.txt"),header=TRUE))
+
+soays_grm_raw <- as.matrix(read.table(paste0(wd,"/Data/Raw/grms/soays_GRM.txt"),header=TRUE))
 # class(soays)
-soays_grm <- forceSymmetric(soays_grm)
+soays_grm <- convert_grm(soays_grm_raw)
 # soays_grm[1:10,1:10]
 # save(soays_grm,file=paste0(wd,"/Data/Raw/grms/soays_grm.Rdata"))
 
@@ -68,8 +72,10 @@ load(paste0(wd,"/Data/Raw/grms/roe_deer_grm.Rdata"))
 
 roe_grm<-as.matrix(b)
 # roe_grm[1:10,1:10]
-
+chol(roe_grm)
 isSymmetric(roe_grm)
+	roe_grm2<-as(as.matrix(Matrix::nearPD(roe_grm)$mat),"dgCMatrix")
+cor(as.numeric(roe_grm),as.numeric(roe_grm2))
 
 ####
 
@@ -109,6 +115,20 @@ soays_se <-sqrt(lambda_to_samp_var(soays_lambda,h2=0.3))
 soays_sim <- samp_var_sim_GRM(soays_grm, h2=0.3, n_sim=1000)
 
 
+td_lambda2 <- eigen(td_grm2, symmetric=TRUE,only.values=TRUE)$values
+td_se2 <- sqrt(lambda_to_samp_var(td_lambda2,h2=0.3))
+
+dragon_lambda2 <- eigen(dragon_grm2, symmetric=TRUE,only.values=TRUE)$values
+dragon_se2 <- sqrt(lambda_to_samp_var(dragon_lambda2,h2=0.3))
+
+td_lambda2 <- eigen(td_grm2, symmetric=TRUE,only.values=TRUE)$values
+td_se2 <- sqrt(lambda_to_samp_var(td_lambda2,h2=0.3))
+
+koala_lambda2 <- eigen(koala_grm2, symmetric=TRUE,only.values=TRUE)$values
+koala_se2 <- sqrt(lambda_to_samp_var(koala_lambda2,h2=0.3))
+
+cbind(c(td_se,dragon_se,koala_se),c(td_se2,dragon_se2,koala_se2))
+
 # grm_sim <- rbind(
 # 	roe=roe_sim,
 # 	soays = soays_sim,
@@ -133,6 +153,8 @@ colnames(grm_dat)[1:2] <- c("se","n")
 
 save(grm_dat,file=paste0(wd,"/Data/Processed/grm_dat.Rdata"))
 
+
+grm_dat <- rbind(grm_dat,koala2 =c(koala_se2, length(koala_lambda2),grm_dat["koala",3:4]) )
 ####
 
 
