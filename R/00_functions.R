@@ -41,17 +41,25 @@ samp_var_sim <- function(ped, h2, m2=0, n_sim=200){
 	c(mean=mean(sims),var=var(sims))
 }
 
+
 MDE_sim <- function(ped,n_sims=1000){
 
-	assign("ped.ainv", asreml::ainverse(ped), envir = .GlobalEnv)
+	assign("ped.ainv", nadiv::makeAinv(ped)$Ainv, envir = .GlobalEnv)
 
 	sims<-do.call(rbind,parallel::mclapply(1:n_sims, function(x){
+
 		dat <- data.frame(y=rnorm(nrow(ped)), id=as.factor(ped[,1]))
-		mod_1 <- asreml::asreml(
-				fixed= y~1
-				, random= ~vm(id,ped.ainv)
-			  , data= dat, trace=FALSE)
-		summary(mod_1)$varcomp["vm(id, ped.ainv)",1]
+		
+		mod_1 <- gremlin::gremlin(
+			y~1
+			, random= ~id
+		  , data= dat
+			, ginverse = list(id = ped.ainv)
+			,v=0
+		  )
+
+		summary(mod_1)$varcompSummary["G.id","Estimate"]
+
 	},mc.cores=6))	
 	rm("ped.ainv", envir = .GlobalEnv)
 	c(mean=mean(sims),var=var(sims), MDE=quantile(sims,0.95))
@@ -62,7 +70,7 @@ MDE_sim <- function(ped,n_sims=1000){
 #  n_sim=10
 samp_var_sim_GRM <- function(grm, h2=0.3, n_sim=200){
 
-	grm<-as(as.matrix(Matrix::nearPD(grm)$mat),"dgCMatrix")
+	grm<-as(grm,"dgCMatrix")
 
 	data<-squidSim::get_population_data(
 		squidSim::simulate_population(

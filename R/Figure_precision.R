@@ -36,7 +36,7 @@ pdf(paste0(wd,"Figures/Fig_precision.pdf"), height=6, width=12)
   plot(NA, xlim=c(-3,4),ylim=c(1,25),bty="n", xaxt="n", yaxt="n")
 
   text(rep(2,23),23:1,names(r2s)[1:23], adj=1)
-  text(rep(3,23),23:1,round(r2s,3)[1:23], col=viridis::viridis(20)[20:1][as.numeric(cut(r2s,seq(0,1,0.05)))])
+  text(rep(3,23),23:1,round(r2s,3)[1:23], col=viridis::viridis(21)[21:1][as.numeric(cut(r2s,seq(-0.05,1,0.05)))])
   abline(v=2.25, col="grey")
   abline(h=24, col="grey")
   text(c(3),c(25),c(expression(italic(R^2))), cex=1.2)

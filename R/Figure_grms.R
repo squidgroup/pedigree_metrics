@@ -12,15 +12,10 @@ load(file=paste0(wd,"Data/Processed/ped_sims.Rdata"))
 # load(paste0(wd,"/Data/Processed/GRM_lambdas.Rdata"))
 load(file=paste0(wd,"/Data/Processed/grm_dat.Rdata"))
 
-load(file=paste0(wd,"/Data/Processed/grm_sims.Rdata"))
-
 grm_dat2 <-cbind(as.data.frame(grm_dat),
-	col=c("red","blue","green","orange","purple","pink","green"),
-	pch=c(21:25,21,23)
+	col=c("red","blue","green","orange","purple","pink"),
+	pch=c(21:25,21)
 	)
-
-# grm_dat3<- cbind(grm_dat2[rownames(grm_sim),],grm_sim)
-
 
 all_se <- sqrt(all_sv[,2])
 n<-as.numeric(all_stat[1,])
@@ -58,11 +53,14 @@ pdf(paste0(wd,"Figures/Fig_grm.pdf"), height=5, width=10)
 }
 dev.off()
 
-# grm_vars<-c(var(dragon_grm[lower.tri(dragon_grm)]),
-# var(koala_grm[lower.tri(koala_grm)]),
-# var(taz_devil[lower.tri(taz_devil)]),
-# var(s_grm[lower.tri(s_grm)])
-# )
-# hist(c(all_stat2[24,]))
-# abline(v=grm_vars)
 
+### Supplementary figure comparing SE approximation on raw GRMs, compared with ones adjusted to be positive definite
+
+setEPS()
+pdf(paste0(wd,"Figures/FigSM_grm_compare.pdf"), height=5, width=5)
+{
+plot(se_h2_comp, log="xy", cex=1.5, pch=19,col=scales::alpha(1,0.5), xlab=expression(Adjusted~italic(SE[h^2]^{(2)} )), ylab=expression(Raw~italic(SE[h^2]^{(2)} )))
+abline(0,1)
+
+}
+dev.off()
