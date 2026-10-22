@@ -25,12 +25,12 @@ pdf(paste0(wd,"Figures/Fig_missing.pdf"), height=5, width=10)
   points(total_n, sqrt(all_missing["var_missing",]), pch=19, col=scales::alpha("blue",0.5))
   mtext("a)", side=3, adj=-0.25,padj=1, cex=2)
 
-  plot(sqrt(all_sv_missing[,1]), sqrt(all_missing["var_all",]), pch=19,col=scales::alpha(1,0.4), xlim=range(sqrt(all_sv_missing)), ylim=range(sqrt(all_missing),na.rm=TRUE), log="xy", xlab=expression(italic(SE[h^2]^{(1)} )), ylab="Expected standard error")
+  plot(sqrt(all_sv_missing[,1]), sqrt(all_missing["var_all",]), pch=19,col=scales::alpha(1,0.4), xlim=range(sqrt(all_sv_missing)), ylim=range(sqrt(all_missing),na.rm=TRUE), log="xy", xlab=expression(italic(SE[h^2]^{(2)} )), ylab="Expected standard error")
   points(sqrt(all_sv_missing[,2]), sqrt(all_missing["var_missing",]), pch=19, col=scales::alpha("orange",0.6))
   points(sqrt(all_sv_missing[,1]), sqrt(all_missing["var_missing",]), pch=19, col=scales::alpha("blue",0.5))
   abline(0,1)
   mtext("b)", side=3, adj=-0.25,padj=1, cex=2)
 
-
+legend("bottomright",c())
 }
 dev.off()

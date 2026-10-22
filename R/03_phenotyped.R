@@ -18,16 +18,14 @@ peds<-parallel::mclapply(1:length(files), function(i){
 names(peds) <- files
 
 
+## analytical approximation of expected SE
 all_sv_missing <- do.call(rbind,parallel::mclapply(peds,function(ped){
   subset_ids <- ped[!is.na(ped$dam),1]
-  A<-nadiv::makeA(ped)
-  A2<-A[subset_ids,subset_ids]
-
-  lambda1 <- eigen(A, symmetric=TRUE,only.values=TRUE)$values
-  lambda2 <- eigen(A2, symmetric=TRUE,only.values=TRUE)$values
+  sv_full <- pedtricks::h2_samp_var(ped,c(0.3))
+  sv_missing <- pedtricks::h2_samp_var(ped,c(0.3))
+  
   cat("I ")
-  c(full=lambda_to_samp_var(lambda1, h2=0.3),
-  missing=lambda_to_samp_var(lambda2, h2=0.3))
+  c(full=sv_full,missing=sv_missing)
 
 }, mc.cores=6))
 

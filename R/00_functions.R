@@ -29,13 +29,8 @@ samp_var_sim <- function(ped, h2, m2=0, n_sim=200){
 				, ginverse = list(id = ped.ainv)
 				,v=0
 			  )
-	  summary(mod_1)$varcompSummary["G.id","Estimate"]
+		deltaSE(list(h2 ~ V1 / (V1 + V2)), mod_1)["Estimate"]
 
-		# mod_1 <- asreml::asreml(
-		# 		fixed= y~1
-		# 		, random= ~vm(id,ped.ainv)
-		# 	  , data= x, trace=FALSE)
-		# summary(mod_1)$varcomp["vm(id, ped.ainv)",1]
 	},mc.cores=6), recursive=TRUE)	
 	rm("ped.ainv", envir = .GlobalEnv)
 	c(mean=mean(sims),var=var(sims))
@@ -58,7 +53,7 @@ MDE_sim <- function(ped,n_sims=1000){
 			,v=0
 		  )
 
-		summary(mod_1)$varcompSummary["G.id","Estimate"]
+		deltaSE(list(h2 ~ V1 / (V1 + V2)), mod_1)["Estimate"]
 
 	},mc.cores=6))	
 	rm("ped.ainv", envir = .GlobalEnv)
@@ -96,7 +91,7 @@ samp_var_sim_GRM <- function(grm, h2=0.3, n_sim=200){
 				, ginverse = list(id = ainv)
 				,v=0
 			)
-	  summary(mod_1)$varcompSummary["G.id","Estimate"]
+		  deltaSE(list(h2 ~ V1 / (V1 + V2)), mod_1)["Estimate"]
 
 		# mod_1 <- asreml::asreml(
 		# 		fixed= y~1
