@@ -66,7 +66,7 @@ for(i in 1:23){
 
   r2 <- summary(lm(log(all_bias)~log(stat)))$adj.r.squared
 
-  plot(stat,all_bias,pch=19, col= scales::alpha(1,0.5),xlab=rownames(all_stat)[i], ylab="Bias in Va", log="xy", main=paste0("r2=",round(r2,3)))
+  plot(stat,all_bias,pch=19, col= scales::alpha(1,0.5),xlab=rownames(all_stat)[i], ylab="Bias in h2", log="xy", main=paste0("r2=",round(r2,3)))
   }
 
 
