@@ -74,11 +74,8 @@ samp_var_sim_missing <- function(ped, h2, n_sim=200){
             ,v=0
             )
 
-    # mod_1 <- asreml::asreml(
-    #     fixed= y~1
-    #     , random= ~vm(id,ped.ainv)
-    #     , data= x, trace=FALSE)
-    va_mod_2<- tryCatch({
+    va_mod_1 <- deltaSE(list(h2 ~ V1 / (V1 + V2)), mod_1)["Estimate"]
+    va_mod_2 <- tryCatch({
      
       mod_2 <- gremlin::gremlin(
         y~1
@@ -87,17 +84,11 @@ samp_var_sim_missing <- function(ped, h2, n_sim=200){
         , ginverse = list(id = ped.ainv)
         ,v=0
         )
-      # mod_2 <- asreml::asreml(
-      #   fixed= y~1
-      #   , random= ~vm(id,ped.ainv)
-      #   , data= data_missing, trace=FALSE)
-      # summary(mod_2)$varcomp["vm(id, ped.ainv)",1]
-      summary(mod_2)$varcompSummary["G.id","Estimate"]
-
+      deltaSE(list(h2 ~ V1 / (V1 + V2)), mod_1)["Estimate"]
       },
     error=function(e)0)
     
-    c(summary(mod_1)$varcompSummary["G.id","Estimate"],va_mod_2)
+    c(va_mod_1,va_mod_2)
       
   },mc.cores=6))  
   rm("ped.ainv", envir = .GlobalEnv)
