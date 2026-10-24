@@ -53,7 +53,7 @@ MDE_sim <- function(ped,n_sims=1000){
 			,v=0
 		  )
 
-		deltaSE(list(h2 ~ V1 / (V1 + V2)), mod_1)["Estimate"]
+		as.numeric(deltaSE(list(h2 ~ V1 / (V1 + V2)), mod_1)["Estimate"])
 
 	},mc.cores=6))	
 	rm("ped.ainv", envir = .GlobalEnv)
@@ -91,7 +91,8 @@ samp_var_sim_GRM <- function(grm, h2=0.3, n_sim=200){
 				, ginverse = list(id = ainv)
 				,v=0
 			)
-		  deltaSE(list(h2 ~ V1 / (V1 + V2)), mod_1)["Estimate"]
+		  cat("I ")
+		  as.numeric(deltaSE(list(h2 ~ V1 / (V1 + V2)), mod_1)["Estimate"])
 
 		# mod_1 <- asreml::asreml(
 		# 		fixed= y~1
@@ -100,6 +101,7 @@ samp_var_sim_GRM <- function(grm, h2=0.3, n_sim=200){
 		# summary(mod_1)$varcomp["vm(id, ped.ainv)",1]
 	},mc.cores=6), recursive=TRUE)	
 	# rm("ainv", envir = .GlobalEnv)
+	# cat("I ")
 	c(mean=mean(sims),var=var(sims))
 }
 

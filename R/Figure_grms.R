@@ -10,7 +10,29 @@ load(paste0(wd,"Data/Processed/ped_h2_se.Rdata"))
 load(paste0(wd,"Data/Processed/ped_stats.Rdata"))
 load(file=paste0(wd,"Data/Processed/ped_sims.Rdata"))
 # load(paste0(wd,"/Data/Processed/GRM_lambdas.Rdata"))
-load(file=paste0(wd,"/Data/Processed/grm_dat.Rdata"))
+
+load(file=paste0(wd,"/Data/Processed/grm_roe_dat.Rdata"))
+load(file=paste0(wd,"/Data/Processed/grm_soay_dat.Rdata"))
+load(file=paste0(wd,"/Data/Processed/grm_koala_dat.Rdata"))
+load(file=paste0(wd,"/Data/Processed/grm_dragon_dat.Rdata"))
+load(file=paste0(wd,"/Data/Processed/grm_td_dat.Rdata"))
+load(file=paste0(wd,"/Data/Processed/grm_stickleback_dat.Rdata"))
+
+
+
+grm_dat <- rbind(
+	roe= roe_dat,
+	soays = soays_dat,
+	koala = koala_dat,
+	dragon = dragon_dat,
+	taz_devil = taz_devil_dat,
+	stickleback = stickleback_dat
+
+	)
+
+
+####
+
 
 grm_dat2 <-cbind(as.data.frame(grm_dat),
 	col=c("red","blue","green","orange","purple","pink"),
@@ -20,6 +42,9 @@ grm_dat2 <-cbind(as.data.frame(grm_dat),
 all_se <- sqrt(all_sv[,2])
 n<-as.numeric(all_stat[1,])
 all_se_sim <- sqrt(all_sim[2,])
+
+cbind(all_se[n<600&n>400],n[n<600&n>400])
+
 
 setEPS()
 pdf(paste0(wd,"Figures/Fig_grm.pdf"), height=5, width=10)
@@ -53,14 +78,3 @@ pdf(paste0(wd,"Figures/Fig_grm.pdf"), height=5, width=10)
 }
 dev.off()
 
-
-### Supplementary figure comparing SE approximation on raw GRMs, compared with ones adjusted to be positive definite
-
-setEPS()
-pdf(paste0(wd,"Figures/FigSM_grm_compare.pdf"), height=5, width=5)
-{
-plot(se_h2_comp, log="xy", cex=1.5, pch=19,col=scales::alpha(1,0.5), xlab=expression(Adjusted~italic(SE[h^2]^{(2)} )), ylab=expression(Raw~italic(SE[h^2]^{(2)} )))
-abline(0,1)
-
-}
-dev.off()
