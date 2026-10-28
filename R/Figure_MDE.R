@@ -42,7 +42,7 @@ pdf(paste0(wd,"Figures/Fig_mde.pdf"), height=6, width=12)
 
   par(mar=c(5,5,3,1))
 
-  plot(mde~maternities,pch=19, ylab="Minimum Detectable Effect",xlab="Number of maternities", xlim=c(0,11000), col= scales::alpha(1,0.5), ylim=c(0,0.2), cex.lab=1.5)
+  plot(mde~maternities,pch=19, ylab="Minimum Detectable Effect",xlab="Number of maternities", xlim=c(0,11000), col= scales::alpha(1,0.5), ylim=c(0,0.27), cex.lab=1.5)
 
   x<-seq(min(log(maternities)),max(log(maternities)),0.1)
   preds <- as.vector(exp(model.matrix(~ x) %*% coef(lm(log(mde)~log(maternities)))))
@@ -69,7 +69,7 @@ for(i in 1:23){
 
  r2 <- summary(lm(log(mde)~log(stat)))$adj.r.squared
 
- plot(stat,mde,pch=19, col= scales::alpha(1,0.5),xlab=rownames(all_stat)[i], ylab="Minimum Detectable Effect", log="xy", main=paste0("r2=",round(r2,3)))
+ plot(stat,mde,pch=19, col= scales::alpha(1,0.5),xlab=rownames(all_stat)[i], ylab="Minimum Detectable Effect", log="xy", main=as.expression(bquote(italic(R^2)~"="~.(round(r2,3)))))
 
 }}
 dev.off()

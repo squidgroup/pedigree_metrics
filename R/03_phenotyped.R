@@ -21,11 +21,15 @@ names(peds) <- files
 ## analytical approximation of expected SE
 all_sv_missing <- do.call(rbind,parallel::mclapply(peds,function(ped){
   subset_ids <- ped[!is.na(ped$dam),1]
-  sv_full <- pedtricks::h2_samp_var(ped,c(0.3))
-  sv_missing <- pedtricks::h2_samp_var(ped,c(0.3))
+  A<-nadiv::makeA(ped)
+  A2<-A[subset_ids,subset_ids]
+
+  lambda1 <- eigen(A, symmetric=TRUE,only.values=TRUE)$values
+  lambda2 <- eigen(A2, symmetric=TRUE,only.values=TRUE)$values
   
   cat("I ")
-  c(full=sv_full,missing=sv_missing)
+  c(full=lambda_to_samp_var(lambda1, h2=0.3),
+  missing=lambda_to_samp_var(lambda2, h2=0.3))
 
 }, mc.cores=6))
 
@@ -82,7 +86,7 @@ samp_var_sim_missing <- function(ped, h2, n_sim=200){
         , ginverse = list(id = ped.ainv)
         ,v=0
         )
-      deltaSE(list(h2 ~ V1 / (V1 + V2)), mod_1)["Estimate"]
+      deltaSE(list(h2 ~ V1 / (V1 + V2)), mod_2)["Estimate"]
       },
     error=function(e)0)
     

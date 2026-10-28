@@ -31,6 +31,6 @@ pdf(paste0(wd,"Figures/Fig_missing.pdf"), height=5, width=10)
   abline(0,1)
   mtext("b)", side=3, adj=-0.25,padj=1, cex=2)
 
-legend("bottomright",c())
+# legend("bottomright",c("all individuals have phenotype","subset have phenotype\n- metrics on reduced set\n","subset have phenotype\n- metrics full pedigree"), pch=19, col=scales::alpha(c(1,"orange","blue"),c(0.4,0.6,0.5)))
 }
 dev.off()

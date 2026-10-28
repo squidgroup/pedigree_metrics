@@ -43,7 +43,7 @@ pdf(paste0(wd,"Figures/Fig_bias.pdf"), height=6, width=12)
   mat_sib <- as.numeric(all_stat2["mean maternal sibship size",])
   par(mar=c(5,5,3,1))
 
-  plot(mat_sib,all_bias,pch=19, ylab=expression(Bias~"in"~italic(V[A])),xlab="Mean maternal sibship size", col= scales::alpha(1,0.5), cex.lab=1.5)
+  plot(mat_sib,all_bias,pch=19, ylab=expression(Bias~"in"~italic(h^2)),xlab="Mean maternal sibship size", col= scales::alpha(1,0.5), cex.lab=1.5)
   x<-seq(min(log(mat_sib)),max(log(mat_sib)),0.1)
   preds <- as.vector(exp(model.matrix(~ x) %*% coef(lm(log(all_bias)~log(mat_sib)))))
 
@@ -56,7 +56,7 @@ dev.off()
 
 
 setEPS()
-pdf(paste0(wd,"Figures/Fig_bias_all.pdf"), height=8, width=14)
+pdf(paste0(wd,"Figures/FigSM_bias_all.pdf"), height=8, width=14)
 {
 
 par(mfrow=c(4,6),mar=c(3.5,3,2,1),mgp=c(2,0.5,0))#mar=c(2,2,3,1))
@@ -66,7 +66,7 @@ for(i in 1:23){
 
   r2 <- summary(lm(log(all_bias)~log(stat)))$adj.r.squared
 
-  plot(stat,all_bias,pch=19, col= scales::alpha(1,0.5),xlab=rownames(all_stat)[i], ylab="Bias in h2", log="xy", main=paste0("r2=",round(r2,3)))
+  plot(stat,all_bias,pch=19, col= scales::alpha(1,0.5),xlab=rownames(all_stat)[i], ylab=expression("Bias in"~italic(h^2)), log="xy", main=as.expression(bquote(italic(R^2)~"="~.(round(r2,3)))))
   }
 
 
