@@ -120,10 +120,11 @@ soays_lambda <- eigen(soays_grm, symmetric=TRUE,only.values=TRUE)$values
 soays_se <-sqrt(lambda_to_samp_var(soays_lambda,h2=0.3))
 soays_sim <- samp_var_sim_GRM(soays_grm, h2=0.3, n_sim=1000)
 
-soay_dat = c(se=soay_se, n=length(soay_lambda),soay_sim)
+soays_dat = c(se=soays_se, n=length(soays_lambda),soays_sim)
 
-save(soay_dat,file=paste0(wd,"/Data/Processed/grm_soay_dat.Rdata"))
-
+save(soays_dat,file=paste0(wd,"/Data/Processed/grm_soays_dat.Rdata"))
+#start 10:35 saturday
+#30 by 13:55 saturday
 ####
 
 
