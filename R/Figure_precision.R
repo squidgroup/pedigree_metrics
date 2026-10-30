@@ -45,7 +45,7 @@ pdf(paste0(wd,"Figures/Fig_precision.pdf"), height=6, width=12)
 
 
   maternities <- as.numeric(all_stat2["maternities",])
-  par(mar=c(5,5,3,1))
+  par(mar=c(5,6,3,1))
 
   plot(maternities,all_sim_se,pch=19, ylab=expression("Expected SE when"~italic(h^2)~"= 0.3"),xlab="Number of maternities", xlim=c(0,11000), col= scales::alpha(1,0.5), ylim=c(0,0.2), cex.lab=1.5)
 

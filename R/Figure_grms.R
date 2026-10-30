@@ -12,7 +12,7 @@ load(file=paste0(wd,"Data/Processed/ped_sims.Rdata"))
 # load(paste0(wd,"/Data/Processed/GRM_lambdas.Rdata"))
 
 load(file=paste0(wd,"/Data/Processed/grm_roe_dat.Rdata"))
-load(file=paste0(wd,"/Data/Processed/grm_soay_dat.Rdata"))
+load(file=paste0(wd,"/Data/Processed/grm_soays_dat.Rdata"))
 load(file=paste0(wd,"/Data/Processed/grm_koala_dat.Rdata"))
 load(file=paste0(wd,"/Data/Processed/grm_dragon_dat.Rdata"))
 load(file=paste0(wd,"/Data/Processed/grm_td_dat.Rdata"))
@@ -25,7 +25,7 @@ grm_dat <- rbind(
 	soays = soays_dat,
 	koala = koala_dat,
 	dragon = dragon_dat,
-	taz_devil = taz_devil_dat,
+	taz_devil = td_dat,
 	stickleback = stickleback_dat
 
 	)
