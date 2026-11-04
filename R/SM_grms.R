@@ -5,10 +5,6 @@ wd <- "/Users/joelpick/github/pedigree_metrics/"
 source(paste0(wd,"R/00_functions.R"))
 
 
-
-
-
-
 ####
 
 load(file=paste0(wd,"/Data/Processed/grm_roe_dat.Rdata"))

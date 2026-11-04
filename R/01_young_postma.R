@@ -1,4 +1,4 @@
-dd<-read.csv("/Users/joelpick/github/maternal_effects/Data/Raw/young_postma_2023_data.csv")
+dd<-read.csv("Data/Raw/young_postma_2023_data.csv")
 
 names(dd)
 
